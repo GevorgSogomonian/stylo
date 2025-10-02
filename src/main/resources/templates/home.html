@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Stylo - Home</title>
+</head>
+<body>
+    <h1>Welcome, <span th:text="${name}">User</span>!</h1>
+    <p>Email: <span th:text="${email}">email@example.com</span></p>
+    <p>Picture: <img th:src="${picture}" alt="Profile picture" width="100"/></p>
+    <form th:action="@{/logout}" method="post">
+      <button type="submit">Logout</button>
+    </form>
+</body>
+</html>
+
