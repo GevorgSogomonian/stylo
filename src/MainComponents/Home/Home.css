@@ -1,0 +1,67 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #000000; /* Черный фон для body */
+    width: 100vw;
+    height: 100vh;
+}
+
+
+.imgBack {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50vw; /* Фоновое изображение на левой половине */
+    height: 100vh;
+    object-fit: cover;
+    z-index: 2; /* Задний план */
+}
+
+.text-wrapper {
+    width: 50vw; /* Текст на правой половине экрана */
+    display: flex;
+    left:50%;
+    flex-direction: column;
+    justify-content: center; /* Центрируем текст вертикально */
+    align-items: flex-end; /* Выравнивание текста по правому краю */
+    z-index: 3; /* Текст поверх изображения */
+}
+
+.music-text {
+    font-size: 48px;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.4), 0 0 10px rgba(0, 255, 0, 0.4);
+    background: linear-gradient(90deg, #00aa00, #002200, #00aa00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+@keyframes glow {
+    0% {
+        text-shadow: 0 0 10px rgba(0, 255, 0, 0.8), 0 0 20px rgba(0, 255, 0, 0.8);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(0, 255, 0, 1), 0 0 40px rgba(0, 255, 0, 1);
+    }
+    100% {
+        text-shadow: 0 0 10px rgba(0, 255, 0, 0.8), 0 0 20px rgba(0, 255, 0, 0.8);
+    }
+
+}
+.submit-button__button {
+    font-size: 24px;
+    position: absolute;
+    font-weight: 400;
+    right: 10%;
+    top:70%;
+    width: 30%;
+    height: 68px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #ff5c4d, #eb469f 30%, #8341ef 75%, #3f68f9);
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    margin-bottom: 16px;
+    z-index: 4;
+}

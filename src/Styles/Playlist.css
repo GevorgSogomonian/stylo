@@ -1,0 +1,53 @@
+.track-item1 {
+    position: relative; /* Устанавливаем контейнер в относительное положение */
+    display: flex;
+    align-items: center; /* Выравниваем элементы по центру по вертикали */
+}
+
+.scatering {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    right: 0; /* Элемент будет справа */
+    top: 50%;
+    transform: translate(50%, -50%); /* Смещение элемента на 50% вправо и по вертикали */
+    background: url(https://zornet.ru/ABVUN/Aba/detunis/supasnab/heart.png) no-repeat 0 0;
+    cursor: pointer;
+    animation: fave-heart 1s steps(28);
+    z-index: 0; /* На заднем плане */
+}
+
+.scatering.active {
+    background-position: -2800px 0;
+    transition: background 1s steps(28);
+}
+
+/* Убедитесь, что текст находится на переднем плане */
+.track-item1 img,
+.track-item1 span {
+    position: relative; /* Элементы на переднем плане */
+    z-index: 1; /* Передний план */
+}
+
+
+.menu12 {
+    position: absolute;
+    width: 40%;
+    height: 40%;
+    max-height: 0;
+    overflow: hidden;
+    background-color: #333;
+    color: white;
+    transition: max-height 0.3s ease-in-out;
+    border-radius: 8px;
+    padding: 0;
+    margin-top: 10px;
+    z-index: 10; /* Передний план для меню */
+}
+
+.menu12.open { /* Максимальная высота открытого меню */
+    overflow-y: auto;
+    height: 40%;/* Прокрутка при переполнении */
+}
+
+

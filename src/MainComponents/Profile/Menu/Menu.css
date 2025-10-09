@@ -1,0 +1,168 @@
+/* Основное меню */
+.menu {
+    position: fixed;
+    top: 50px;
+    right: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    z-index: 1000;
+    height: 100%;
+    transition: all 1s;
+    transform: translateX(130%);
+    background-color: black;
+   /* Добавьте это свойство для закругленных краев */
+}
+.menu.light{
+    background-color: lightgray;
+    color:black
+}
+.menu.active {
+    transform: translateX(0);
+}
+
+.menu.active.light{
+    background-color: lightgray;
+    color:black
+}
+/* Контент меню */
+.menu_content {
+    width: 100px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: 50px;
+    box-sizing: border-box; /* Для учета padding */
+    color: black;
+    transition:all 1s;
+    transition-duration: 2s;
+}
+
+/* Размытие фона */
+/*.blur.active {
+    width: 4000px;
+    height: 100vh;
+    backdrop-filter: blur(2px);
+    position: absolute;
+    right:220px;
+    transition:all 1s;
+
+}
+.blur{
+
+    width: 0;
+    height: 0;
+    position: absolute;
+    right:100px;
+    transition: all 1s;
+}
+*/
+
+ul {
+    margin-left: 15px;
+    text-align: center;
+    list-style: none; /* Убираем маркеры списка */
+    padding: 0;
+}
+
+.liMenu {
+    color: white;
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    margin-right: 10px;
+    transition: color 0.3s ease, transform 0.3s ease; /* Плавный переход для эффектов */
+}
+.liMenu.light{
+    color: black;
+}
+.liMenuNotPoint{
+    color: white;
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    margin-right: 10px;
+    transition: color 0.3s ease, transform 0.3s ease; /* Плавный переход для эффектов */
+}
+.liMenuNotPoint.light{
+    color: black;
+}
+li{
+    color: white;
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    transition: color 0.3s ease, transform 0.3s ease; /* Плавный переход для эффектов */
+}
+
+
+.liMenu::before {
+    content: "•"; /* Добавляем маркер перед каждым элементом */
+    color: white;
+    margin-right: 20px;
+    font-size: 1.5rem;
+}
+
+ul li a {
+    color: inherit; /* Наследуем цвет */
+    text-decoration: none; /* Убираем подчеркивание */
+    transition: color 0.3s ease; /* Плавный переход цвета */
+}
+
+
+.exit,.delete{
+    color:red;
+}
+.exit,.delete:hover{
+    color: red;
+
+}
+
+.toggle-switch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px;
+}
+
+/* Скрываем стандартный чекбокс */
+.toggle-input {
+    display: none;
+}
+
+/* Стиль для лейбла переключателя */
+.toggle-label {
+    cursor: pointer;
+    width: 60px;
+    height: 34px;
+    background-color: #ccc;
+    border-radius: 34px;
+    position: relative;
+    transition: background-color 0.3s;
+}
+
+/* Стиль для ползунка переключателя */
+.toggle-label::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+/* Состояние переключателя в положении "включено" */
+.toggle-input:checked + .toggle-label {
+    background-color: #2e2e2e;
+}
+
+/* Ползунок переключателя при активном состоянии */
+.toggle-input:checked + .toggle-label::before {
+    transform: translateX(26px);
+}

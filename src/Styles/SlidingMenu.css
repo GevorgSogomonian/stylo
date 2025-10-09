@@ -1,0 +1,90 @@
+.menu1-container {
+    position: absolute;
+    margin-top: 20px; /* Отступ сверху для контейнера */
+    width: 550px; /* Растягиваем контейнер на всю ширину родителя */
+}
+
+.menu1 {
+    position: absolute; /* Меню позиционируется относительно родителя */
+    width: 550px; /* Меню будет растягиваться на всю ширину контейнера */
+    max-height: 0; /* Начальная высота закрытого меню */
+    overflow: hidden; /* Скрытие содержимого при закрытом меню */
+    background-color: #333; /* Цвет фона меню */
+    color: white; /* Цвет текста меню */
+    transition: max-height 0.3s ease-in-out; /* Анимация открытия/закрытия меню */
+    border-radius: 8px; /* Скругленные углы */
+    padding: 0;
+    margin-top: 10px; /* Отступ сверху между полем ввода и меню */
+}
+
+.menu1.open {
+    max-height: 500px; /* Максимальная высота открытого меню */
+}
+
+.menu1.closed {
+    max-height: 0; /* Закрытое меню скрыто */
+}
+
+ul {
+    list-style-type: none; /* Убираем маркеры у списка */
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    padding: 10px; /* Внутренний отступ для каждого элемента списка */
+    border-bottom: 1px solid #555; /* Нижняя граница для разделения элементов */
+    display: flex; /* Flexbox для размещения изображения и текста */
+    align-items: center; /* Вертикальное выравнивание по центру */
+}
+
+li:last-child {
+    border-bottom: none; /* Убираем нижнюю границу у последнего элемента */
+}
+
+.track-image1 {
+    width: 50px; /* Ширина изображения трека */
+    height: 50px; /* Высота изображения трека */
+    margin-right: 10px; /* Отступ справа от изображения */
+}
+
+.track-name {
+    font-size: 16px; /* Размер текста имени трека */
+    color: #fff; /* Цвет текста имени трека */
+}
+/* Анимация скелетонов */
+@keyframes skeleton-loading {
+    0% {
+        background-color: #e0e0e0;
+    }
+    100% {
+        background-color: #c0c0c0;
+    }
+}
+
+/* Скелетон для изображения трека */
+.skeleton-image1 {
+    width: 50px;
+    height: 50px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    margin-right: 10px;
+    animation: skeleton-loading 1.5s infinite alternate;
+}
+
+/* Скелетон для текста трека */
+.skeleton-text1 {
+    width: 80%; /* Ограничиваем ширину текста */
+    height: 20px;
+    background-color: #e0e0e0;
+    animation: skeleton-loading 1.5s infinite alternate;
+    border-radius: 4px;
+}
+
+/* Элемент списка для скелетона */
+.skeleton-track-item {
+    padding: 10px;
+    border-bottom: 1px solid #555;
+    display: flex;
+    align-items: center;
+}

@@ -1,0 +1,113 @@
+.imgVisible{
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top:54%;
+    left:70%
+
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+button {
+    padding: 10px;
+    font-size: 16px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    margin-top: 10px;
+}
+button:hover {
+    background-color: #fff;
+    color: #000;
+    border: 2px solid #000;
+}
+input {
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+.file-input-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 10px;
+}
+.file-input-container input[type="file"] {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+}
+.input-valid {
+    color:  red;
+}
+
+.input-invalid {
+    /* стили для невалидного ввода */
+    color: green;
+}
+.Valid{
+    visibility: hidden;
+}
+.Nevalid{
+    visibility: visible;
+    color: #FF0000;
+    margin-bottom: 20px;
+
+}
+.file-input-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    width: 100%;
+    box-sizing: border-box;
+    background-image: url("https://avatars.mds.yandex.net/i?id=0c7320412c2135c756817b46512e95dba66c3ce4-13605392-images-thumbs&n=13");
+}
+.file-input-label:hover {
+    background-color: #fff;
+    color: white;
+    border: 2px solid #000;
+
+}
+.Back {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #000;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, color 0.3s;
+}
+.unsent{
+    visibility: visible;
+}
+.send{
+   visibility: hidden;
+}
+.input_password{
+    color:white;
+}

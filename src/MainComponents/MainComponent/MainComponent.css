@@ -1,0 +1,362 @@
+body, html, #root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: #0e0e11;
+    color: white;
+    font-family: 'Inter', sans-serif;
+}
+
+.main-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Левая панель */
+.sidebar {
+    width: 100px;
+    background-color: #151518;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    padding: 20px 0;
+}
+
+.vault-name {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 24px;
+    font-weight: 500;
+    margin-top: 40px;
+}
+
+.help {
+    font-size: 14px;
+    opacity: 0.6;
+}
+
+/* Контент */
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    background-color: #1a1a1d;
+    overflow: hidden;
+}
+
+/* Верхняя панель */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e1e22;
+    padding: 10px 20px;
+    height: 60px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.search-wrapper {
+    flex: 1;
+    max-width: 500px;
+    margin: 0 30px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: none;
+    background: #2b2b31;
+    color: white;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: #aaa;
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.settings {
+    font-size: 20px;
+    opacity: 0.7;
+}
+
+.user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.avatar {
+    border-radius: 50%;
+}
+
+/* Рабочая зона */
+.editor-area {
+    position: relative;
+    flex: 1;
+    margin: 20px;
+    border-radius: 20px;
+    background-color: #242428;
+    overflow: hidden;
+    cursor: default;
+}
+
+.moon {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    opacity: 0.8;
+}
+/* Панель поиска */
+.search-wrapper {
+    position: relative;
+    flex: 1;
+    max-width: 500px;
+    margin: 0 30px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: none;
+    background: #2b2b31;
+    color: white;
+    font-size: 16px;
+    outline: none;
+}
+/* Снимем рамки и тени у картинок */
+.plain-image {
+    border: none;
+    box-shadow: none;
+}
+/* wrapper/изображение */
+.image-wrapper {
+    position: absolute;
+    cursor: grab;
+    z-index: 2; /* базовый слой; bringToFront будет менять порядок рендеринга */
+}
+
+/* img внутри wrapper — должны принимать указатели */
+.draggable-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: auto; /* важно, чтобы onPointerDown работал на img */
+    user-select: none;
+    border: none;
+    box-shadow: none;
+}
+
+/* Ручка ресайза — приклеена к правому нижнему углу */
+.resize-handle {
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    width: 16px;
+    height: 16px;
+    background: rgba(0, 255, 0, 0.6);
+    border: 2px solid rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    cursor: se-resize;
+    z-index: 10;
+    box-shadow: 0 0 6px rgba(0,255,0,0.4);
+}
+
+/* Манекен под одеждой */
+.mannequin {
+    position: absolute;
+    left: 50%;
+    top: 52%;
+    transform: translate(-50%, -50%);
+    height: 75%;
+    opacity: 0.85;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.context-menu {
+    animation: fadeIn 0.1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.upload-btn {
+    background: rgba(0, 255, 0, 0.2);
+    border: 1px solid rgba(0, 255, 0, 0.4);
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin-left: 8px;
+    margin-top: 100%;
+    color: #00ff00;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.upload-btn:hover {
+    background: rgba(0, 255, 0, 0.4);
+}
+
+.search-panel {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 320px;
+    background: rgba(10, 20, 10, 0.9);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    z-index: 20;
+}
+
+.search-result-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 10px;
+    cursor: pointer;
+    object-fit: cover;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
+    transition: transform 0.2s;
+}
+
+.search-result-img:hover {
+    transform: scale(1.1);
+}
+
+.draggable-img {
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,255,0,0.3);
+    user-select: none;
+    transition: box-shadow 0.2s ease;
+}
+
+.draggable-img:active {
+    box-shadow: 0 0 20px rgba(0,255,0,0.6);
+}
+
+/* Уголок для изменения размера */
+.resize-handle {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 14px;
+    height: 14px;
+    background: rgba(0,255,0,0.6);
+    border-radius: 50%;
+    cursor: nwse-resize;
+    border: 2px solid #000;
+    box-shadow: 0 0 6px rgba(0,255,0,0.7);
+}
+
+.resize-handle:hover {
+    background: rgba(0,255,0,0.9);
+}
+
+/* Выезжающая панель с результатами */
+.search-panel {
+    position: absolute;
+    top: 180%;
+    left: 5%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 10px;
+    background: #1f1f23;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    animation: slideIn 0.3s ease forwards;
+    z-index: 10;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translate(20px, -50%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(0, -50%);
+    }
+}
+
+.search-result-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-result-img:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(0,255,0,0.4);
+}
+
+.workspace-hint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #666;
+    font-size: 18px;
+}
+
+.draggable-img {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,255,0,0.3);
+    cursor: grab;
+    user-select: none;
+    transition: box-shadow 0.2s ease;
+}
+
+.draggable-img:active {
+    cursor: grabbing;
+    box-shadow: 0 0 20px rgba(0,255,0,0.6);
+}
+
+.save-btn {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background: #3b3b40;
+    border: none;
+    color: #ccc;
+    padding: 8px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.save-btn:hover {
+    background: #4a4a50;
+    color: #fff;
+}
