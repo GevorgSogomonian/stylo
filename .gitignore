@@ -6,6 +6,9 @@ target/
 .env
 HELP.md
 log/
+minio-data/
+mysql-data/
+src/main/resources/keystore.p12
 log.txt
 
 ### STS ###

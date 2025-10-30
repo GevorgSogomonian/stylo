@@ -1,0 +1,51 @@
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio-server
+    ports:
+      - "${MINIO_EXTERNAL_PORT}:${MINIO_DOCKER_PORT}"  # API порт для S3-операций
+      - "${MINIO_CONSOLE_EXTERNAL_PORT}:${MINIO_CONSOLE_DOCKER_PORT}"  # Порт веб-консоли
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./minio-data:/data  # Персистентное хранилище (создаст папку в текущей директории)
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-server
+    ports:
+      - "${MYSQL_EXTERNAL_PORT}:${MYSQL_DOCKER_PORT}"  # Порт для подключения из Spring Boot или клиента
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${SPRING_DATASOURCE_USERNAME}
+      MYSQL_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    volumes:
+      - ./mysql-data:/var/lib/mysql  # Персистентное хранилище (папка в текущей директории)
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  app:
+    build:
+      context: ./
+      platforms:
+        - linux/amd64
+    container_name: stylo
+    env_file:
+        - ./.env
+    environment:
+      JPA_HIBERNATE_DDL_AUTO: create
+      MYSQL_HOST: mysql-server
+      MINIO_HOST: minio-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - minio

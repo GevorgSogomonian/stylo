@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import com.example.stylo.entity.User;
 import com.example.stylo.repository.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
@@ -36,9 +39,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
           newUser.setPictureUrl(pictureUrl);
           newUser.setOauthProvider(provider);
           newUser.setOauthProviderId(providerId);
+          log.info("entity saved");
           return userRepository.save(newUser);
         });
-
     return oauth2User;
   }
 }
