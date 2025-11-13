@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.example.stylo.service.CustomOAuth2UserService;
 
@@ -18,7 +19,9 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
+      http
+          .csrf(csrf -> csrf
+              .ignoringRequestMatchers(new AntPathRequestMatcher("/api/**")))
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers("/", "/login", "/error").permitAll()
             .anyRequest().authenticated())
@@ -26,7 +29,7 @@ public class SecurityConfig {
             .loginPage("/login")
             .defaultSuccessUrl("/home", true)
             .userInfoEndpoint(userInfo -> userInfo
-                .userService(customOAuth2UserService)))
+                .oidcUserService(customOAuth2UserService)))
         .logout(logout -> logout
             .logoutSuccessUrl("/")
             .permitAll());

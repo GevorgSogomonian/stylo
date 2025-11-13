@@ -29,37 +29,41 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FileController {
 
-    private final ImageService imageService;
+  private final ImageService imageService;
 
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> upload(
-            @AuthenticationPrincipal OAuth2User principal,
-            @RequestParam("file") MultipartFile file) throws Exception {
-        if (principal == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
-        }
+  @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<String> upload(
+      @AuthenticationPrincipal OAuth2User principal,
+      @RequestParam("file") MultipartFile file) throws Exception {
 
-        String objectName = imageService.uploadImage(file);
-        return ResponseEntity.ok(objectName);
+    if (principal == null) {
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+          "User not authenticated");
     }
 
-    @GetMapping(value = "/{objectName}")
-    public ResponseEntity<InputStreamResource> download(
-            @AuthenticationPrincipal OAuth2User principal,
-            @PathVariable String objectName) throws Exception {
-        if (principal == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
-        }
+    String objectName = imageService.uploadImage(file);
+    return ResponseEntity.ok(objectName);
+  }
 
-        InputStream stream = imageService.downloadImage(objectName);
-        String contentType = imageService.getContentType(objectName);
+  @GetMapping(value = "/{objectName}")
+  public ResponseEntity<InputStreamResource> download(
+      @AuthenticationPrincipal OAuth2User principal,
+      @PathVariable String objectName) throws Exception {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(
-                contentType != null ? MediaType.parseMediaType(contentType) : MediaType.APPLICATION_OCTET_STREAM);
-        headers.set(HttpHeaders.CONTENT_DISPOSITION,
-                "inline; filename*=UTF-8''" + URLEncoder.encode(objectName, StandardCharsets.UTF_8));
-
-        return new ResponseEntity<>(new InputStreamResource(stream), headers, HttpStatus.OK);
+    if (principal == null) {
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+          "User not authenticated");
     }
+
+    InputStream stream = imageService.downloadImage(objectName);
+    String contentType = imageService.getContentType(objectName);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(
+        contentType != null ? MediaType.parseMediaType(contentType) : MediaType.APPLICATION_OCTET_STREAM);
+    headers.set(HttpHeaders.CONTENT_DISPOSITION,
+        "inline; filename*=UTF-8''" + URLEncoder.encode(objectName, StandardCharsets.UTF_8));
+
+    return new ResponseEntity<>(new InputStreamResource(stream), headers, HttpStatus.OK);
+  }
 }
