@@ -2,6 +2,8 @@ import './MainComponent.css';
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import html2canvas from "html2canvas";
+import AvatarMenu from "./AvatarMenu";
+
 const MainComponent = () => {
     const navigate = useNavigate();
     const [images, setImages] = useState([]);
@@ -11,6 +13,101 @@ const MainComponent = () => {
     const [searchResults, setSearchResults] = useState([]);
     const workspaceRef = useRef(null);
     const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, targetId: null });
+    const[isOpen,setOpen] = useState(false)
+    const menuRef = useRef(null);
+    // изображения для категорий
+    const [hatsImages,setHatsImages] = useState(['https://avatars.mds.yandex.net/i?id=379e00382a52704e50959e83e7a35b773dd9fe4a-5883354-images-thumbs&n=13','https://avatars.mds.yandex.net/i?id=379e00382a52704e50959e83e7a35b773dd9fe4a-5883354-images-thumbs&n=13','https://avatars.mds.yandex.net/i?id=379e00382a52704e50959e83e7a35b773dd9fe4a-5883354-images-thumbs&n=13','https://avatars.mds.yandex.net/i?id=379e00382a52704e50959e83e7a35b773dd9fe4a-5883354-images-thumbs&n=13'])
+    const [shoesImages,setShoesImages] = useState(['https://yandex.ru/images/search?text=%D0%BA%D1%83%D1%80%D1%82%D0%BA%D0%B0+%D0%B7%D0%B8%D0%BC%D0%BD%D1%8F%D1%8F+%D0%BC%D1%83%D0%B6%D1%81%D0%BA%D0%B0%D1%8F&pos=9&rpt=simage&img_url=https%3A%2F%2Fimg.joomcdn.net%2Ff8f8ac5fd9574445111ac5280f8743ddd71a5a80_original.jpeg&from=tabbar&lr=2'])
+    const [legsImages,setLegsImage] = useState([])
+    const [torsoImages,setTorsoImages] = useState([])
+    const [outerwearImages,setOuterwearImages] = useState(['https://avatars.mds.yandex.net/i?id=fc5d185e779c00b91105e62815d090abecb6882c-5869170-images-thumbs&n=13'])
+
+    const [carouselStates, setCarouselStates] = useState({
+        hats: { currentIndex: 0 },
+        outerwear: { currentIndex: 0 },
+        torso: { currentIndex: 0 },
+        legs: { currentIndex: 0 },
+        shoes: { currentIndex: 0 }
+    });
+// для перемещения фото из категорий
+    const [draggedImage, setDraggedImage] = useState(null);
+    const [isDragOver, setIsDragOver] = useState(false);
+
+// Функции для drag-and-drop
+    const handleDragStart = (e, imageUrl, category) => {
+        e.dataTransfer.setData('imageUrl', imageUrl);
+        e.dataTransfer.setData('category', category);
+        setDraggedImage({ imageUrl, category });
+        e.target.style.opacity = '0.4';
+    };
+
+    const handleDragEnd = (e) => {
+        e.target.style.opacity = '1';
+        setDraggedImage(null);
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+        setIsDragOver(true);
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        setIsDragOver(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setIsDragOver(false);
+
+        const imageUrl = e.dataTransfer.getData('imageUrl');
+        const category = e.dataTransfer.getData('category');
+
+        if (imageUrl) {
+            const workspaceRect = workspaceRef.current.getBoundingClientRect();
+            const x = e.clientX - workspaceRect.left - 75;
+            const y = e.clientY - workspaceRect.top - 75;
+
+            const newImg = {
+                id: Date.now(),
+                src: imageUrl,
+                x: Math.max(0, x),
+                y: Math.max(0, y),
+                width: 150,
+                height: 150,
+                category: category
+            };
+
+            setImages((prev) => [...prev, newImg]);
+        }
+
+        setDraggedImage(null);
+    };
+// Функция для прокрутки карусели
+    const scrollCarousel = (category, direction) => {
+        setCarouselStates(prev => {
+            const currentIndex = prev[category]?.currentIndex || 0;
+            const imagesCount = {
+                hats: hatsImages.length,
+                outerwear: outerwearImages.length,
+                torso: torsoImages.length,
+                legs: legsImages.length,
+                shoes: shoesImages.length
+            }[category];
+
+            const maxIndex = Math.ceil(imagesCount / 3) - 1;
+            let newIndex = currentIndex + direction;
+
+            // Ограничиваем индекс в допустимых пределах
+            newIndex = Math.max(0, Math.min(newIndex, maxIndex));
+
+            return {
+                ...prev,
+                [category]: { currentIndex: newIndex }
+            };
+        });
+    };
 
     // === Поиск ===
     const handleSearchChange = (e) => {
@@ -251,6 +348,7 @@ const MainComponent = () => {
 
     return (
         <div className="main-container">
+
             <aside className="sidebar">
                 <label className="upload-btn">
                     📁 Загрузить
@@ -259,14 +357,235 @@ const MainComponent = () => {
                         accept="image/*"
                         multiple
                         onChange={handleFileUpload}
-                        style={{ display: 'none' }}
+                        style={{display: 'none'}}
                     />
                 </label>
+
+                {/* Секция головных уборов */}
+                <div className="category-section">
+                    <div className="category-header">
+                        <h3>Головные уборы</h3>
+                        <div className="carousel-controls">
+                            <button
+                                className="nav-btn prev-btn"
+                                onClick={() => scrollCarousel('hats', -1)}
+                                disabled={carouselStates.hats?.currentIndex === 0}
+                            >
+                                ‹
+                            </button>
+                            <button
+                                className="nav-btn next-btn"
+                                onClick={() => scrollCarousel('hats', 1)}
+                                disabled={carouselStates.hats?.currentIndex >= Math.ceil(hatsImages.length / 3) - 1}
+                            >
+                                ›
+                            </button>
+                        </div>
+                    </div>
+                    <div className="carousel-container">
+                        <div
+                            className="carousel-track"
+                            style={{transform: `translateX(-${(carouselStates.hats?.currentIndex || 0) * 100}%)`}}
+                        >
+                            {Array.from({length: Math.ceil(hatsImages.length / 3)}).map((_, groupIndex) => (
+                                <div key={groupIndex} className="carousel-slide">
+                                    {hatsImages.slice(groupIndex * 3, groupIndex * 3 + 3).map((imageUrl, index) => (
+                                        <img
+                                            key={groupIndex * 3 + index}
+                                            src={imageUrl}
+                                            alt={`Головной убор ${groupIndex * 3 + index + 1}`}
+                                            className="gallery-item draggable"
+                                            draggable="true"
+                                            onDragStart={(e) => handleDragStart(e, imageUrl, 'hats')}
+                                            onDragEnd={handleDragEnd}
+                                        />
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Секция верхней одежды */}
+                <div className="category-section">
+                    <div className="category-header">
+                        <h3>Верхняя одежда</h3>
+                        <div className="carousel-controls">
+                            <button
+                                className="nav-btn prev-btn"
+                                onClick={() => scrollCarousel('outerwear', -1)}
+                                disabled={carouselStates.outerwear?.currentIndex === 0}
+                            >
+                                ‹
+                            </button>
+                            <button
+                                className="nav-btn next-btn"
+                                onClick={() => scrollCarousel('outerwear', 1)}
+                                disabled={carouselStates.outerwear?.currentIndex >= Math.ceil(outerwearImages.length / 3) - 1}
+                            >
+                                ›
+                            </button>
+                        </div>
+                    </div>
+                    <div className="carousel-container">
+                        <div
+                            className="carousel-track"
+                            style={{transform: `translateX(-${(carouselStates.outerwear?.currentIndex || 0) * 100}%)`}}
+                        >
+                            {Array.from({length: Math.ceil(outerwearImages.length / 3)}).map((_, groupIndex) => (
+                                <div key={groupIndex} className="carousel-slide">
+                                    {outerwearImages.slice(groupIndex * 3, groupIndex * 3 + 3).map((imageUrl, index) => (
+                                        <img
+                                            key={groupIndex * 3 + index}
+                                            src={imageUrl}
+                                            alt={`Верхняя одежда ${groupIndex * 3 + index + 1}`}
+                                            className="gallery-item"
+                                            draggable="true"
+                                            onDragStart={(e) => handleDragStart(e, imageUrl, 'outerwear')}
+                                            onDragEnd={handleDragEnd}
+                                        />
+                                    ))}
+
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Остальные секции по аналогии */}
+                {/* Секция туловища */}
+                <div className="category-section">
+                    <div className="category-header">
+                        <h3>Туловище</h3>
+                        <div className="carousel-controls">
+                            <button
+                                className="nav-btn prev-btn"
+                                onClick={() => scrollCarousel('torso', -1)}
+                                disabled={carouselStates.torso?.currentIndex === 0}
+                            >
+                                ‹
+                            </button>
+                            <button
+                                className="nav-btn next-btn"
+                                onClick={() => scrollCarousel('torso', 1)}
+                                disabled={carouselStates.torso?.currentIndex >= Math.ceil(torsoImages.length / 3) - 1}
+                            >
+                                ›
+                            </button>
+                        </div>
+                    </div>
+                    <div className="carousel-container">
+                        <div
+                            className="carousel-track"
+                            style={{transform: `translateX(-${(carouselStates.torso?.currentIndex || 0) * 100}%)`}}
+                        >
+                            {Array.from({length: Math.ceil(torsoImages.length / 3)}).map((_, groupIndex) => (
+                                <div key={groupIndex} className="carousel-slide">
+                                    {torsoImages.slice(groupIndex * 3, groupIndex * 3 + 3).map((imageUrl, index) => (
+                                        <img
+                                            key={groupIndex * 3 + index}
+                                            src={imageUrl}
+                                            alt={`Одежда для туловища ${groupIndex * 3 + index + 1}`}
+                                            className="gallery-item"
+                                        />
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Секция ног */}
+                <div className="category-section">
+                    <div className="category-header">
+                        <h3>Ноги</h3>
+                        <div className="carousel-controls">
+                            <button
+                                className="nav-btn prev-btn"
+                                onClick={() => scrollCarousel('legs', -1)}
+                                disabled={carouselStates.legs?.currentIndex === 0}
+                            >
+                                ‹
+                            </button>
+                            <button
+                                className="nav-btn next-btn"
+                                onClick={() => scrollCarousel('legs', 1)}
+                                disabled={carouselStates.legs?.currentIndex >= Math.ceil(legsImages.length / 3) - 1}
+                            >
+                                ›
+                            </button>
+                        </div>
+                    </div>
+                    <div className="carousel-container">
+                        <div
+                            className="carousel-track"
+                            style={{transform: `translateX(-${(carouselStates.legs?.currentIndex || 0) * 100}%)`}}
+                        >
+                            {Array.from({length: Math.ceil(legsImages.length / 3)}).map((_, groupIndex) => (
+                                <div key={groupIndex} className="carousel-slide">
+                                    {legsImages.slice(groupIndex * 3, groupIndex * 3 + 3).map((imageUrl, index) => (
+                                        <img
+                                            key={groupIndex * 3 + index}
+                                            src={imageUrl}
+                                            alt={`Одежда для ног ${groupIndex * 3 + index + 1}`}
+                                            className="gallery-item"
+                                        />
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Секция обуви */}
+                <div className="category-section">
+                    <div className="category-header">
+                        <h3>Обувь</h3>
+                        <div className="carousel-controls">
+                            <button
+                                className="nav-btn prev-btn"
+                                onClick={() => scrollCarousel('shoes', -1)}
+                                disabled={carouselStates.shoes?.currentIndex === 0}
+                            >
+                                ‹
+                            </button>
+                            <button
+                                className="nav-btn next-btn"
+                                onClick={() => scrollCarousel('shoes', 1)}
+                                disabled={carouselStates.shoes?.currentIndex >= Math.ceil(shoesImages.length / 3) - 1}
+                            >
+                                ›
+                            </button>
+                        </div>
+                    </div>
+                    <div className="carousel-container">
+                        <div
+                            className="carousel-track"
+                            style={{transform: `translateX(-${(carouselStates.shoes?.currentIndex || 0) * 100}%)`}}
+                        >
+                            {Array.from({length: Math.ceil(shoesImages.length / 3)}).map((_, groupIndex) => (
+                                <div key={groupIndex} className="carousel-slide">
+                                    {shoesImages.slice(groupIndex * 3, groupIndex * 3 + 3).map((imageUrl, index) => (
+                                        <img
+                                            key={groupIndex * 3 + index}
+                                            src={imageUrl}
+                                            alt={`Обувь ${groupIndex * 3 + index + 1}`}
+                                            className="gallery-item"
+                                        />
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
             </aside>
 
+
             <div className="content">
-                <nav className="top-nav">
+                <nav className="top-navi">
                     <div className="logo">Stylo</div>
+                    <AvatarMenu/>
+
 
                     <div className="search-wrapper">
                         <input
@@ -291,16 +610,17 @@ const MainComponent = () => {
                         )}
                     </div>
 
-                    <div className="user-section">
-                        <div className="settings">⚙️</div>
-                        <div className="user">
-                            <img src="https://picsum.photos/40" alt="avatar" className="avatar" />
-                            <span>John</span>
-                        </div>
-                    </div>
+
                 </nav>
 
-                <div className="editor-area" ref={workspaceRef}>
+
+                <div
+                    className={`editor-area ${isDragOver ? 'drag-over' : ''}`}
+                    ref={workspaceRef}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                >
                     {/* Манекен */}
                     <img
                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOPr51KmVupb-yWDvSU98FVVyoM_5peYepxw&s"
@@ -325,7 +645,7 @@ const MainComponent = () => {
                                 src={img.src}
                                 alt=""
                                 className="draggable-img"
-                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                style={{width: '100%', height: '100%', objectFit: 'contain'}}
                                 onPointerDown={(e) => handlePointerDownImage(e, img.id)}
                                 draggable={false}
                             />

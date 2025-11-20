@@ -1,0 +1,100 @@
+.header_avatar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Кнопка-аватар */
+.avatar_but {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    background: none;
+    padding: 0;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.avatar_but:hover {
+    border-color: #dd8717;
+    transform: scale(1.05);
+}
+
+/* Выпадающее меню */
+.avatar_menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 230px;
+    padding: 10px;
+    height: 300px;
+    flex-direction: column;
+    background-color: #fff;
+    border: 1px solid #dd8717;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(-10px);
+
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 999;
+    align-items: flex-end;
+}
+
+
+
+.avatar_menu.active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Стрелочка */
+.avatar_menu::before,
+.avatar_menu::after {
+    content: "";
+    position: absolute;
+    right: 18px;
+    border: 8px solid transparent;
+}
+
+.avatar_menu::before {
+    top: -16px;
+    border-bottom-color: #dd8717;
+}
+
+.avatar_menu::after {
+    top: -15px;
+    border-bottom-color: #fff;
+}
+
+/* Список в выпадающем меню */
+.avatar_list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.avatar_list_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.avatar_list_item + .avatar_list_item {
+    margin-top: 1px;
+}
+
+.avatar_list_item:hover {
+    background: #fff7eb;
+    color: #dd8717;
+}

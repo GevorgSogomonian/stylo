@@ -11,6 +11,7 @@ body, html, #root {
     display: flex;
     height: 100vh;
     width: 100vw;
+
 }
 
 /* Левая панель */
@@ -34,10 +35,7 @@ body, html, #root {
     margin-top: 40px;
 }
 
-.help {
-    font-size: 14px;
-    opacity: 0.6;
-}
+
 
 /* Контент */
 .content {
@@ -47,17 +45,18 @@ body, html, #root {
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
     background-color: #1a1a1d;
-    overflow: hidden;
+
 }
 
 /* Верхняя панель */
-.top-nav {
+.top-navi {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: #1e1e22;
     padding: 10px 20px;
     height: 60px;
+
 }
 
 .logo {
@@ -66,6 +65,7 @@ body, html, #root {
 }
 
 .search-wrapper {
+    position: absolute;
     flex: 1;
     max-width: 500px;
     margin: 0 30px;
@@ -359,4 +359,170 @@ body, html, #root {
 .save-btn:hover {
     background: #4a4a50;
     color: #fff;
+}
+
+
+/*aside
+
+ */
+
+.sidebar {
+    width: 380px; /* Еще шире для 3 изображений в ряд */
+    padding: 20px;
+    background: #f5f5f5;
+    overflow-y: auto;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.category-section {
+    margin-bottom: 25px;
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.category-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+}
+
+.carousel-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.nav-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover:not(:disabled) {
+    background: #f0f0f0;
+    border-color: #ccc;
+}
+
+.nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Контейнер для карусели */
+.carousel-container {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+    background: white;
+    border: 1px solid #e0e0e0;
+}
+
+/* Дорожка карусели */
+.carousel-track {
+    display: flex;
+    transition: transform 0.3s ease;
+    width: 100%;
+}
+
+/* Слайд карусели (группа из 3 изображений) */
+.carousel-slide {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 12px;
+    flex: 0 0 100%;
+    min-width: 100%;
+}
+
+.gallery-item {
+    width: 100%;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.gallery-item:hover {
+    transform: scale(1.05);
+    border-color: #4CAF50;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.upload-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 25px;
+    background: #4CAF50;
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.upload-btn:hover {
+    background: #45a049;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Индикатор текущей страницы */
+.carousel-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.indicator-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ddd;
+    transition: background 0.3s;
+}
+
+.indicator-dot.active {
+    background: #4CAF50;
+}
+/* Добавьте в MainComponent.css */
+
+/* Стили для перетаскиваемых элементов */
+.gallery-item.draggable {
+    cursor: grab;
+    transition: all 0.2s ease;
+}
+
+.gallery-item.draggable:active {
+    cursor: grabbing;
+    transform: scale(0.95);
+}
+
+.gallery-item.draggable:hover {
+    box-shadow: 0 0 0 2px #4CAF50;
+}
+
+/* Стиль для рабочей области при перетаскивании */
+.editor-area.drag-over {
+    background-color: rgba(76, 175, 80, 0.1);
+    border: 2px dashed #4CAF50;
 }
