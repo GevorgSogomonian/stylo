@@ -15,12 +15,28 @@ import com.example.stylo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+/**
+ * OIDC user service that provisions a local User entity when a user logs in via OAuth2/OIDC.
+ * Delegates to the default OidcUserService to fetch attributes, persists or finds a User record,
+ * and returns a CustomOAuth2User that combines the OIDC principal and the persisted User entity.
+ */
 @Service
 public class CustomOAuth2UserService extends OidcUserService {
 
   @Autowired
   private UserRepository userRepository;
 
+  /**
+   * Load the OIDC user and provision or lookup a local User entity.
+   *
+   * This method delegates to the default OidcUserService to obtain attributes, then
+   * checks the database for an existing user matched by provider + providerId. If no
+   * user is found a new User is created and persisted.
+   *
+   * @param userRequest details about the client registration and access token context
+   * @return an OidcUser implementation (CustomOAuth2User) that wraps the OIDC principal and the persisted User
+   * @throws OAuth2AuthenticationException when OIDC user info cannot be retrieved
+   */
   @Override
   @Transactional
   public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {

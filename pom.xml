@@ -102,6 +102,34 @@
         <artifactId>spring-boot-starter-thymeleaf</artifactId>
         <version>3.5.6</version>
     </dependency>
+
+    <!-- https://mvnrepository.com/artifact/net.coobird/thumbnailator -->
+    <dependency>
+        <groupId>net.coobird</groupId>
+        <artifactId>thumbnailator</artifactId>
+        <version>0.4.20</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.twelvemonkeys.imageio/imageio-jpeg -->
+    <dependency>
+        <groupId>com.twelvemonkeys.imageio</groupId>
+        <artifactId>imageio-jpeg</artifactId>
+        <version>3.12.0</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.twelvemonkeys.imageio/imageio-tiff -->
+    <dependency>
+        <groupId>com.twelvemonkeys.imageio</groupId>
+        <artifactId>imageio-tiff</artifactId>
+        <version>3.12.0</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.twelvemonkeys.imageio/imageio-webp -->
+    <dependency>
+        <groupId>com.twelvemonkeys.imageio</groupId>
+        <artifactId>imageio-webp</artifactId>
+        <version>3.12.0</version>
+    </dependency>
 	</dependencies>
 
 	<build>

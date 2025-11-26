@@ -12,10 +12,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+/**
+ * Simple REST controller exposing authenticated user information and a protected test endpoint.
+ * Base path: /api
+ */
 @RestController
 @RequestMapping("/api")
 public class UserController {
 
+  /**
+   * Return a JSON map with the authenticated user's basic profile information.
+   *
+   * @param principal the authenticated OAuth2 user (injected)
+   * @return a map containing name, email and picture attributes
+   * @throws ResponseStatusException 401 if the principal is null (not authenticated)
+   */
   @GetMapping("/user")
   public Map<String, Object> getUser(@AuthenticationPrincipal OAuth2User principal) {
     if (principal == null) {
@@ -30,6 +41,11 @@ public class UserController {
     return userInfo;
   }
 
+  /**
+   * Example authenticated-only endpoint that returns a fixed message.
+   *
+   * @return HTTP 200 with a plain text body when the request is authenticated
+   */
   @GetMapping("/protected")
   public ResponseEntity<String> protectedEndpoint() {
     return ResponseEntity.ok("This is a protected endpoint");

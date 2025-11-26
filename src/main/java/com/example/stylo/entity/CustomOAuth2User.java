@@ -8,6 +8,11 @@ import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
+/**
+ * Wrapper around OidcUser that holds a reference to the persisted local User entity.
+ * Returned by CustomOAuth2UserService after successful OIDC login so controllers can access both
+ * OIDC attributes and application-level user data.
+ */
 public class CustomOAuth2User implements OidcUser {
 
   private final OidcUser delegate;
@@ -48,6 +53,11 @@ public class CustomOAuth2User implements OidcUser {
     return delegate.getIdToken();
   }
 
+  /**
+   * Return the local persisted User associated with this OIDC principal.
+   *
+   * @return the application User entity
+   */
   public User getUser() {
     return user;
   }

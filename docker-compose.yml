@@ -21,8 +21,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${SPRING_DATASOURCE_USERNAME}
-      MYSQL_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      MYSQL_USER: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - ./mysql-data:/var/lib/mysql  # Персистентное хранилище (папка в текущей директории)
     restart: unless-stopped
@@ -56,3 +56,17 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+
+  rembg:
+    image: danielgatis/rembg:latest
+    restart: unless-stopped
+    # Команда 's' запускает HTTP-сервер
+    command: s --host 0.0.0.0 --port ${REMBG_DOCKER_PORT} --log_level info
+    ports:
+      - "${REMBG_EXTERNAL_PORT}:${REMBG_DOCKER_PORT}"
+    environment:
+      # Опционально: Выбор модели. 'u2net' (стандартная) или 'u2netp' (легкая, быстрее на CPU)
+      - U2NET_HOME=/root/.u2net
+    volumes:
+      # Чтобы не скачивать модель (170MB) при каждом перезапуске контейнера
+      - ./u2net_models:/root/.u2net

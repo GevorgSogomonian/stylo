@@ -16,6 +16,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+/**
+ * JPA entity representing an application user provisioned from an OAuth2 provider.
+ * Stores basic profile information and the provider identifiers used to match returning users.
+ */
 @Setter
 public class User {
 

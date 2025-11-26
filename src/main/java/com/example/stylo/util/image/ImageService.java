@@ -2,7 +2,6 @@ package com.example.stylo.util.image;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import io.minio.MinioClient;
 import io.minio.GetObjectArgs;
@@ -14,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.util.UUID;
 
 @Slf4j
@@ -26,26 +26,46 @@ public class ImageService {
   @Value("${minio.bucketName}")
   private String bucketName;
 
-  public String uploadImage(MultipartFile file) throws Exception {
-    String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
-    try (InputStream inputStream = file.getInputStream()) {
-      log.info(String.format("""
-          Размер файла в байтах: %s
-          Тип файла: %s
-          Имя файла: %s""",
-          file.getSize(), file.getContentType(), fileName));
+  /**
+   * Upload a pre-processed image provided as bytes to MinIO and return the
+   * generated object name.
+   * The image is stored with contentType image/png.
+   *
+   * @param data             image bytes (expected PNG)
+   * @param originalFilename original filename used to compose stored name
+   * @return object name stored in MinIO
+   * @throws Exception on MinIO errors
+   */
+  public String uploadImage(byte[] data, String originalFilename) throws Exception {
+    // Normalize filename to use .png extension because processed images are PNG
+    String baseName = (originalFilename != null) ? originalFilename : "image";
+    int idx = baseName.lastIndexOf('.');
+    if (idx > 0) {
+      baseName = baseName.substring(0, idx);
+    }
+    String fileName = UUID.randomUUID() + "-" + baseName + ".png";
+
+    try (ByteArrayInputStream bais = new ByteArrayInputStream(data)) {
+      log.info(String.format("Storing processed image: size=%d name=%s", data.length, fileName));
       minioClient.putObject(
           PutObjectArgs.builder()
               .bucket(bucketName)
               .object(fileName)
-              .stream(inputStream, file.getSize(), -1)
-              .contentType(file.getContentType())
+              .stream(bais, data.length, -1)
+              .contentType("image/png")
               .build());
     }
 
     return fileName;
   }
 
+  /**
+   * Download an object from MinIO as an InputStream.
+   *
+   * @param objectName object name in the configured bucket
+   * @return InputStream of the object's data
+   * @throws Exception on MinIO errors
+   */
   public InputStream downloadImage(String objectName) throws Exception {
     return minioClient.getObject(
         GetObjectArgs.builder()
@@ -54,6 +74,13 @@ public class ImageService {
             .build());
   }
 
+  /**
+   * Retrieve the stored content type for an object in MinIO.
+   *
+   * @param objectName object name in the configured bucket
+   * @return MIME content type as stored in MinIO or null if not available
+   * @throws Exception on MinIO errors
+   */
   public String getContentType(String objectName) throws Exception {
     return minioClient.statObject(
         StatObjectArgs.builder()
@@ -63,6 +90,14 @@ public class ImageService {
         .contentType();
   }
 
+  /**
+   * Remove an object from MinIO.
+   * Note: this method accepts a bucketName parameter allowing removal from
+   * non-default buckets.
+   *
+   * @param bucketName the bucket containing the object
+   * @param objecUrl   the object name to remove
+   */
   public void deleteImage(String bucketName, String objecUrl) {
     try {
       minioClient.removeObject(RemoveObjectArgs.builder()

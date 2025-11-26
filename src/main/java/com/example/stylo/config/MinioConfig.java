@@ -9,6 +9,10 @@ import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Configuration that creates and configures a MinioClient bean using application properties
+ * and ensures the configured bucket exists at startup.
+ */
 @Slf4j
 @Configuration
 public class MinioConfig {

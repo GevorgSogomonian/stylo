@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .env
+u2net_models/
 HELP.md
 log/
 minio-data/
