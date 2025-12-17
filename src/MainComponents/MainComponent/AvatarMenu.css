@@ -5,15 +5,12 @@
     justify-content: flex-end;
 }
 
-/* Кнопка-аватар */
 .avatar_but {
     width: 42px;
     height: 42px;
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid transparent;
-    background: none;
-    padding: 0;
     transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
@@ -22,79 +19,69 @@
     transform: scale(1.05);
 }
 
-/* Выпадающее меню */
 .avatar_menu {
     position: absolute;
     top: 50px;
     right: 0;
-    width: 230px;
-    padding: 10px;
-    height: 300px;
-    flex-direction: column;
+    width: 200px;
+    height:400px;
     background-color: #fff;
     border: 1px solid #dd8717;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    opacity: 0;
-    transform: translateY(-10px);
-
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 999;
-    align-items: flex-end;
-}
-
-
-
-.avatar_menu.active {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
+    z-index: 1000;
+    padding: 8px 0; /* ВЕРНУЛИ padding сверху и снизу */
 }
 
 /* Стрелочка */
-.avatar_menu::before,
+.avatar_menu::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #dd8717;
+}
+
 .avatar_menu::after {
     content: "";
     position: absolute;
-    right: 18px;
-    border: 8px solid transparent;
+    top: -6px;
+    right: 12px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #fff;
 }
-
-.avatar_menu::before {
-    top: -16px;
-    border-bottom-color: #dd8717;
-}
-
-.avatar_menu::after {
-    top: -15px;
-    border-bottom-color: #fff;
-}
-
-/* Список в выпадающем меню */
 .avatar_list {
     margin: 0;
     padding: 0;
     list-style: none;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
+
 
 .avatar_list_item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 16px;
-    font-weight: 500;
-    color: #555;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #333;
     cursor: pointer;
-    padding: 8px 10px;
-    border-radius: 6px;
-    transition: background 0.2s, color 0.2s;
-}
-
-.avatar_list_item + .avatar_list_item {
-    margin-top: 1px;
+    transition: background-color 0.2s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    box-sizing: border-box;
+    display: block; /* Добавили display: block */
 }
 
 .avatar_list_item:hover {
-    background: #fff7eb;
+    background-color: #fff7eb;
     color: #dd8717;
 }

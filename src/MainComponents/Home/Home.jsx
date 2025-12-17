@@ -4,10 +4,10 @@ import {useEffect} from "react";
 
 const Home = () => {
     const navigate = useNavigate();
-    useEffect(() => {
+  /*  useEffect(() => {
         if( localStorage.getItem('jwtToken')!==undefined && localStorage.getItem('jwtToken')!==null )
             navigate("/profile")
-    }, []);
+    }, []);*/
 
     const stairTextContainerStyles = {
         textAlign: 'left', // Выровнять текст по правому краю
@@ -30,9 +30,7 @@ const Home = () => {
         <div>
             <img className="imgBack" src="" alt="background"/>
             <div className="text-wrapper" style={stairTextContainerStyles}>
-                <div style={{...musicTextStyles, marginRight: '200px'}}>Го</div>
-                <div style={{...musicTextStyles, marginRight: '75px'}}>в чат </div>
-                <div style={{...musicTextStyles, marginRight: '-200px'}}>прямо сейчас</div>
+
 
             </div>
             <button className="submit-button__button submit" onClick={() => redirectTo('/stylo')}>Войти или зарегистрироваться</button>

@@ -17,11 +17,12 @@ const MainComponent = () => {
     const menuRef = useRef(null);
     // изображения для категорий
     const [hatsImages,setHatsImages] = useState(['https://avatars.mds.yandex.net/i?id=379e00382a52704e50959e83e7a35b773dd9fe4a-5883354-images-thumbs&n=13','https://avatars.mds.yandex.net/i?id=379e00382a52704e50959e83e7a35b773dd9fe4a-5883354-images-thumbs&n=13','https://avatars.mds.yandex.net/i?id=379e00382a52704e50959e83e7a35b773dd9fe4a-5883354-images-thumbs&n=13','https://avatars.mds.yandex.net/i?id=379e00382a52704e50959e83e7a35b773dd9fe4a-5883354-images-thumbs&n=13'])
-    const [shoesImages,setShoesImages] = useState(['https://yandex.ru/images/search?text=%D0%BA%D1%83%D1%80%D1%82%D0%BA%D0%B0+%D0%B7%D0%B8%D0%BC%D0%BD%D1%8F%D1%8F+%D0%BC%D1%83%D0%B6%D1%81%D0%BA%D0%B0%D1%8F&pos=9&rpt=simage&img_url=https%3A%2F%2Fimg.joomcdn.net%2Ff8f8ac5fd9574445111ac5280f8743ddd71a5a80_original.jpeg&from=tabbar&lr=2'])
-    const [legsImages,setLegsImage] = useState([])
-    const [torsoImages,setTorsoImages] = useState([])
+    const [shoesImages,setShoesImages] = useState(['https://avatars.mds.yandex.net/i?id=e892295c09a217ed083585e15ec2c4cdb1cb1fb1-16477815-images-thumbs&n=13'])
+    const [legsImages,setLegsImages] = useState(['https://avatars.mds.yandex.net/i?id=320896406a365bed5c2225ce304ea8fecf76ed7e-4727286-images-thumbs&n=13'])
+    const [torsoImages,setTorsoImages] = useState(['https://avatars.mds.yandex.net/i?id=251b3c35cc09dcf26e710ddc131864bffcacea73-10125837-images-thumbs&n=13'])
     const [outerwearImages,setOuterwearImages] = useState(['https://avatars.mds.yandex.net/i?id=fc5d185e779c00b91105e62815d090abecb6882c-5869170-images-thumbs&n=13'])
-
+    //манекен
+    const [maneken,setManeken] = useState('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOPr51KmVupb-yWDvSU98FVVyoM_5peYepxw&s')
     const [carouselStates, setCarouselStates] = useState({
         hats: { currentIndex: 0 },
         outerwear: { currentIndex: 0 },
@@ -29,6 +30,52 @@ const MainComponent = () => {
         legs: { currentIndex: 0 },
         shoes: { currentIndex: 0 }
     });
+    // обработчик перетаскивания картинок в категории
+    const handleDragStartEditorImage = (e, image) => {
+        e.dataTransfer.setData("type", "editor-image");
+        e.dataTransfer.setData("imageId", image.id);
+        e.dataTransfer.setData("src", image.src);
+    };
+    // определитель категории при перетакскивании из editor area
+    const handleDropToCategory = (eOrId, category) => {
+        let id, src;
+        if (typeof eOrId === 'object' && eOrId.dataTransfer) {
+            // старый вызов через drag-and-drop
+            id = eOrId.dataTransfer.getData("imageId");
+            src = images.find(img => img.id === +id)?.src;
+        } else {
+            // вызов через контекстное меню, передаём id напрямую
+            id = eOrId;
+            src = images.find(img => img.id === id)?.src;
+        }
+
+        if (!src) return;
+
+        // удаляем из редактора
+        setImages(prev => prev.filter(img => img.id !== +id));
+
+        // добавляем в категорию
+        switch (category) {
+            case "hats":
+                setHatsImages(prev => [...prev, src]);
+                break;
+            case "outerwear":
+                setOuterwearImages(prev => [...prev, src]);
+                break;
+            case "torso":
+                setTorsoImages(prev => [...prev, src]);
+                break;
+            case "legs":
+                setLegsImages(prev => [...prev, src]);
+                break;
+            case "shoes":
+                setShoesImages(prev => [...prev, src]);
+                break;
+            default:
+                break;
+        }
+    };
+
 // для перемещения фото из категорий
     const [draggedImage, setDraggedImage] = useState(null);
     const [isDragOver, setIsDragOver] = useState(false);
@@ -56,8 +103,86 @@ const MainComponent = () => {
         e.preventDefault();
         setIsDragOver(false);
     };
+    useEffect(() => {
+        const handleGlobalDrop = async (e) => {
+            e.preventDefault();
+            const imageUrl = e.dataTransfer.getData('imageUrl');
+            const category = e.dataTransfer.getData('category');
+            if (!imageUrl) return;
 
-    const handleDrop = (e) => {
+            // тут можно вычислить категорию по координатам мыши
+            // или использовать e.target.closest('.category-section')
+            const categoryElement = e.target.closest('.category-section');
+            if (categoryElement) {
+                const category = categoryElement.dataset.category; // добавь data-category
+                handleDropToCategory(e, category);
+            }
+        };
+
+        window.addEventListener('dragover', (e) => e.preventDefault());
+        window.addEventListener('drop', handleGlobalDrop);
+
+        return () => {
+            window.removeEventListener('dragover', (e) => e.preventDefault());
+            window.removeEventListener('drop', handleGlobalDrop);
+        };
+    }, []);
+
+// Добавьте эту функцию в ваш компонент MainComponent
+    const removeWhiteBackground = (src) => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.src = src;
+
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                ctx.drawImage(img, 0, 0);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+                // Проходим по всем пикселям
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+
+                    // Если пиксель почти белый — делаем прозрачным
+                    if (r > 240 && g > 240 && b > 240) {
+                        data[i + 3] = 0; // прозрачность
+                    }
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+
+                // Конвертируем canvas обратно в data URL
+                const newSrc = canvas.toDataURL();
+                resolve(newSrc);
+            };
+
+            img.onerror = () => resolve(src); // В случае ошибки возвращаем исходное изображение
+        });
+    };
+    const manekenUpload = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            const imgSrc = e.target.result; // base64
+            setManeken(imgSrc);             // устанавливаем как maneken
+        };
+
+        reader.readAsDataURL(file);
+    };
+    const handleDrop = async (e) => {
         e.preventDefault();
         setIsDragOver(false);
 
@@ -69,9 +194,12 @@ const MainComponent = () => {
             const x = e.clientX - workspaceRect.left - 75;
             const y = e.clientY - workspaceRect.top - 75;
 
+            // Удаляем белый фон перед добавлением
+            const processedImageUrl = await removeWhiteBackground(imageUrl);
+
             const newImg = {
                 id: Date.now(),
-                src: imageUrl,
+                src: processedImageUrl,
                 x: Math.max(0, x),
                 y: Math.max(0, y),
                 width: 150,
@@ -212,15 +340,44 @@ const MainComponent = () => {
     };
 
     // === Загрузка файлов ===
-    const handleFileUpload = (e) => {
+    const handleFileUpload = async (e) => {
         const files = Array.from(e.target.files);
-        files.forEach((file) => {
+
+        for (const file of files) {
             const reader = new FileReader();
-            reader.onload = (ev) => handleAddImage(ev.target.result);
+            reader.onload = async (ev) => {
+                const originalDataUrl = ev.target.result;
+                // Удаляем белый фон перед добавлением
+                const processedImageUrl = await removeWhiteBackground(originalDataUrl);
+                handleAddImage(processedImageUrl);
+            };
             reader.readAsDataURL(file);
-        });
+        }
     };
 
+    useEffect(() => {
+        const handlePaste = async (e) => {
+            const items = e.clipboardData?.items;
+            if (!items) return;
+
+            for (let item of items) {
+                if (item.type.indexOf('image') !== -1) {
+                    const file = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = async (ev) => {
+                        const originalDataUrl = ev.target.result;
+                        // Удаляем белый фон перед добавлением
+                        const processedImageUrl = await removeWhiteBackground(originalDataUrl);
+                        handleAddImage(processedImageUrl);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        };
+
+        window.addEventListener('paste', handlePaste);
+        return () => window.removeEventListener('paste', handlePaste);
+    }, []);
     // === Вставка из буфера обмена ===
     useEffect(() => {
         const handlePaste = (e) => {
@@ -333,6 +490,8 @@ const MainComponent = () => {
             }
         };
 
+
+
         const onPointerUp = () => {
             draggingRef.current = null;
             resizingRef.current = null;
@@ -351,7 +510,7 @@ const MainComponent = () => {
 
             <aside className="sidebar">
                 <label className="upload-btn">
-                    📁 Загрузить
+                    Загрузить фото из своей галереи
                     <input
                         type="file"
                         accept="image/*"
@@ -360,10 +519,21 @@ const MainComponent = () => {
                         style={{display: 'none'}}
                     />
                 </label>
+                <label className="redact_maneken_but">
+                    Изменить манекена
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={manekenUpload}
+                        style={{display: 'none'}}
+                    />
+
+                </label>
 
                 {/* Секция головных уборов */}
-                <div className="category-section">
-                    <div className="category-header">
+                <div className="category-section" onDragOver={(e) => e.preventDefault()}
+                     onDrop={(e) => handleDropToCategory(e, 'hats')}>
+                <div className="category-header">
                         <h3>Головные уборы</h3>
                         <div className="carousel-controls">
                             <button
@@ -407,7 +577,8 @@ const MainComponent = () => {
                 </div>
 
                 {/* Секция верхней одежды */}
-                <div className="category-section">
+                <div className="category-section" onDragOver={(e) => e.preventDefault()}
+                     onDrop={(e) => handleDropToCategory(e, 'outerwear')}>
                     <div className="category-header">
                         <h3>Верхняя одежда</h3>
                         <div className="carousel-controls">
@@ -454,7 +625,8 @@ const MainComponent = () => {
 
                 {/* Остальные секции по аналогии */}
                 {/* Секция туловища */}
-                <div className="category-section">
+                <div className="category-section" onDragOver={(e) => e.preventDefault()}
+                     onDrop={(e) => handleDropToCategory(e, 'torso')}>
                     <div className="category-header">
                         <h3>Туловище</h3>
                         <div className="carousel-controls">
@@ -481,12 +653,16 @@ const MainComponent = () => {
                         >
                             {Array.from({length: Math.ceil(torsoImages.length / 3)}).map((_, groupIndex) => (
                                 <div key={groupIndex} className="carousel-slide">
+
                                     {torsoImages.slice(groupIndex * 3, groupIndex * 3 + 3).map((imageUrl, index) => (
                                         <img
                                             key={groupIndex * 3 + index}
                                             src={imageUrl}
                                             alt={`Одежда для туловища ${groupIndex * 3 + index + 1}`}
                                             className="gallery-item"
+                                            draggable="true"
+                                            onDragStart={(e) => handleDragStart(e, imageUrl, 'torso')}
+                                            onDragEnd={handleDragEnd}
                                         />
                                     ))}
                                 </div>
@@ -496,7 +672,11 @@ const MainComponent = () => {
                 </div>
 
                 {/* Секция ног */}
-                <div className="category-section">
+                <div className="category-section"
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => handleDropToCategory(e, 'legs')}
+
+                    >
                     <div className="category-header">
                         <h3>Ноги</h3>
                         <div className="carousel-controls">
@@ -529,6 +709,9 @@ const MainComponent = () => {
                                             src={imageUrl}
                                             alt={`Одежда для ног ${groupIndex * 3 + index + 1}`}
                                             className="gallery-item"
+                                            draggable="true"
+                                            onDragStart={(e) => handleDragStart(e, imageUrl, 'legs')}
+                                            onDragEnd={handleDragEnd}
                                         />
                                     ))}
                                 </div>
@@ -537,8 +720,9 @@ const MainComponent = () => {
                     </div>
                 </div>
 
-                {/* Секция обуви */}
-                <div className="category-section">
+                    {/* Секция обуви */}
+                <div className="category-section" onDragOver={(e) => e.preventDefault()}
+                     onDrop={(e) => handleDropToCategory(e, 'shoes')}>
                     <div className="category-header">
                         <h3>Обувь</h3>
                         <div className="carousel-controls">
@@ -565,12 +749,16 @@ const MainComponent = () => {
                         >
                             {Array.from({length: Math.ceil(shoesImages.length / 3)}).map((_, groupIndex) => (
                                 <div key={groupIndex} className="carousel-slide">
+
                                     {shoesImages.slice(groupIndex * 3, groupIndex * 3 + 3).map((imageUrl, index) => (
                                         <img
                                             key={groupIndex * 3 + index}
                                             src={imageUrl}
                                             alt={`Обувь ${groupIndex * 3 + index + 1}`}
                                             className="gallery-item"
+                                            draggable="true"
+                                            onDragStart={(e) => handleDragStart(e, imageUrl, 'shoes')}
+                                            onDragEnd={handleDragEnd}
                                         />
                                     ))}
                                 </div>
@@ -623,7 +811,7 @@ const MainComponent = () => {
                 >
                     {/* Манекен */}
                     <img
-                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOPr51KmVupb-yWDvSU98FVVyoM_5peYepxw&s"
+                        src= {maneken}
                         alt="mannequin"
                         className="mannequin"
                     />
@@ -647,7 +835,9 @@ const MainComponent = () => {
                                 className="draggable-img"
                                 style={{width: '100%', height: '100%', objectFit: 'contain'}}
                                 onPointerDown={(e) => handlePointerDownImage(e, img.id)}
-                                draggable={false}
+                                draggable={true}
+                                onDragStart={(e) => handleDragStartEditorImage(e, img)}
+
                             />
                             <div
                                 className="resize-handle"
@@ -660,7 +850,6 @@ const MainComponent = () => {
                 </div>
             </div>
 
-            {/* === Контекстное меню === */}
             {contextMenu.visible && (
                 <div
                     className="context-menu"
@@ -673,15 +862,46 @@ const MainComponent = () => {
                         borderRadius: '8px',
                         padding: '6px 10px',
                         zIndex: 9999,
-                        cursor: 'pointer',
+                        cursor: 'default',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
                         userSelect: 'none',
+                        minWidth: '160px',
                     }}
-                    onClick={handleDeleteImage}
                 >
-                    🗑 Удалить
+                    {/* Удаление */}
+                    <div
+                        className="context-item"
+                        onClick={handleDeleteImage}
+                    >
+                         Удалить
+                    </div>
+
+                    <div style={{borderTop: '1px solid #555', margin: '4px 0'}}></div>
+
+                    {/* Добавить в категорию */}
+                    <div className="context-item has-submenu">
+                        Добавить в категорию
+                        <div className="submenu">
+                            {['hats', 'outerwear', 'torso', 'legs', 'shoes'].map(cat => (
+                                <div
+                                    key={cat}
+                                    className="submenu-item"
+                                    onClick={() => {
+                                        handleDropToCategory(contextMenu.targetId, cat);
+                                        setContextMenu({ visible: false, x: 0, y: 0, targetId: null });
+                                    }}
+                                    onMouseDown={(e) => e.stopPropagation()}
+                                >
+                                    {cat}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             )}
+
+
+
         </div>
     );
 };

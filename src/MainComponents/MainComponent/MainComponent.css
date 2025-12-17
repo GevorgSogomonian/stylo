@@ -14,18 +14,8 @@ body, html, #root {
 
 }
 
-/* Левая панель */
-.sidebar {
-    width: 100px;
-    background-color: #151518;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    border-top-left-radius: 15px;
-    border-bottom-left-radius: 15px;
-    padding: 20px 0;
-}
+
+
 
 .vault-name {
     writing-mode: vertical-rl;
@@ -45,6 +35,8 @@ body, html, #root {
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
     background-color: #1a1a1d;
+    position: relative;
+    z-index: 1;
 
 }
 
@@ -56,6 +48,9 @@ body, html, #root {
     background: #1e1e22;
     padding: 10px 20px;
     height: 60px;
+
+
+
 
 }
 
@@ -114,7 +109,7 @@ body, html, #root {
     margin: 20px;
     border-radius: 20px;
     background-color: #242428;
-    overflow: hidden;
+   overflow: hidden;
     cursor: default;
 }
 
@@ -203,18 +198,21 @@ body, html, #root {
     to { opacity: 1; transform: scale(1); }
 }
 
-.upload-btn {
-    background: rgba(0, 255, 0, 0.2);
-    border: 1px solid rgba(0, 255, 0, 0.4);
-    border-radius: 8px;
-    padding: 6px 10px;
-    margin-left: 8px;
-    margin-top: 100%;
-    color: #00ff00;
-    cursor: pointer;
-    transition: background 0.2s;
-}
 
+.redact_maneken_but{
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 25px;
+    background: #4CAF50;
+    color: white;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-weight: 500;
+    font-size: 15px;
+}
 .upload-btn:hover {
     background: rgba(0, 255, 0, 0.4);
 }
@@ -374,10 +372,15 @@ body, html, #root {
     height: 100vh;
     position: sticky;
     top: 0;
+    z-index: 0;
+
 }
 
 .category-section {
     margin-bottom: 25px;
+    position: relative;
+    min-height: 120px; /* чтобы при drop была куда бросать */
+    padding: 8px;
 }
 
 .category-header {
@@ -430,6 +433,8 @@ body, html, #root {
     border-radius: 8px;
     background: white;
     border: 1px solid #e0e0e0;
+    position: relative;
+    z-index: 5;
 }
 
 /* Дорожка карусели */
@@ -470,6 +475,7 @@ body, html, #root {
     width: 100%;
     padding: 12px;
     margin-bottom: 25px;
+    margin-top: 100px;
     background: #4CAF50;
     color: white;
     text-align: center;
@@ -526,3 +532,44 @@ body, html, #root {
     background-color: rgba(76, 175, 80, 0.1);
     border: 2px dashed #4CAF50;
 }
+
+
+.context-menu .context-item {
+    padding: 4px 8px;
+    cursor: pointer;
+    position: relative;
+}
+
+.context-menu .context-item:hover {
+    background-color: #444;
+}
+
+.context-menu .has-submenu .submenu {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    background: #333;
+    border-radius: 6px;
+    padding: 4px 0;
+    min-width: 140px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.context-menu .has-submenu:hover .submenu {
+    display: block;
+}
+
+.context-menu .submenu-item {
+    padding: 4px 12px;
+    cursor: pointer;
+}
+
+.context-menu .submenu-item:hover {
+    background-color: #555;
+}
+
+
+
+
+
