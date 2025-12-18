@@ -15,28 +15,12 @@ import com.example.stylo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-/**
- * OIDC user service that provisions a local User entity when a user logs in via OAuth2/OIDC.
- * Delegates to the default OidcUserService to fetch attributes, persists or finds a User record,
- * and returns a CustomOAuth2User that combines the OIDC principal and the persisted User entity.
- */
 @Service
 public class CustomOAuth2UserService extends OidcUserService {
 
   @Autowired
   private UserRepository userRepository;
 
-  /**
-   * Load the OIDC user and provision or lookup a local User entity.
-   *
-   * This method delegates to the default OidcUserService to obtain attributes, then
-   * checks the database for an existing user matched by provider + providerId. If no
-   * user is found a new User is created and persisted.
-   *
-   * @param userRequest details about the client registration and access token context
-   * @return an OidcUser implementation (CustomOAuth2User) that wraps the OIDC principal and the persisted User
-   * @throws OAuth2AuthenticationException when OIDC user info cannot be retrieved
-   */
   @Override
   @Transactional
   public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
@@ -44,7 +28,7 @@ public class CustomOAuth2UserService extends OidcUserService {
         userRequest.getClientRegistration().getRegistrationId(),
         userRequest.getClientRegistration().getClientId());
 
-    OidcUser oidcUser = super.loadUser(userRequest);
+    OidcUser oidcUser = loadOidcUser(userRequest);
 
     String email = oidcUser.getAttribute("email");
     String name = oidcUser.getAttribute("name");
@@ -60,15 +44,27 @@ public class CustomOAuth2UserService extends OidcUserService {
         .findByOauthProviderAndOauthProviderId(provider, providerId)
         .orElse(null);
     if (user == null) {
+      log.info("User not found in database, creating a new one.");
       user = new User();
       user.setEmail(email);
       user.setName(name);
       user.setPictureUrl(pictureUrl);
       user.setOauthProvider(provider);
       user.setOauthProviderId(providerId);
-      userRepository.save(user);
-      log.info("new user saved");
+      log.info("Attempting to save new user: {}", user);
+      try {
+        userRepository.save(user);
+        log.info("New user saved successfully with id: {}", user.getId());
+      } catch (Exception e) {
+        log.error("Error saving user to the database", e);
+      }
+    } else {
+      log.info("User found in database: {}", user);
     }
     return new CustomOAuth2User(oidcUser, user);
+  }
+
+  protected OidcUser loadOidcUser(OidcUserRequest userRequest) {
+    return super.loadUser(userRequest);
   }
 }

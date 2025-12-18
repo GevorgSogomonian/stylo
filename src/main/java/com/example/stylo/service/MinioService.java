@@ -1,27 +1,27 @@
-package com.example.stylo.util.image;
+package com.example.stylo.service;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import io.minio.MinioClient;
-import io.minio.GetObjectArgs;
-import io.minio.StatObjectArgs;
-import io.minio.PutObjectArgs;
-import io.minio.RemoveObjectArgs;
+import com.example.stylo.entity.Photo;
+import com.example.stylo.entity.User;
+import com.example.stylo.repository.PhotoRepository;
+import io.minio.*;
 import io.minio.errors.MinioException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InputStream;
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.UUID;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ImageService {
+public class MinioService {
 
   private final MinioClient minioClient;
+  private final PhotoRepository photoRepository;
 
   @Value("${minio.bucketName}")
   private String bucketName;
@@ -33,10 +33,13 @@ public class ImageService {
    *
    * @param data             image bytes (expected PNG)
    * @param originalFilename original filename used to compose stored name
+   * @param user             the user who uploaded the image
+   * @param category         the category of the image
    * @return object name stored in MinIO
    * @throws Exception on MinIO errors
    */
-  public String uploadImage(byte[] data, String originalFilename) throws Exception {
+  @Transactional
+  public String uploadImage(byte[] data, String originalFilename, User user, String category) throws Exception {
     // Normalize filename to use .png extension because processed images are PNG
     String baseName = (originalFilename != null) ? originalFilename : "image";
     int idx = baseName.lastIndexOf('.');
@@ -55,6 +58,12 @@ public class ImageService {
               .contentType("image/png")
               .build());
     }
+
+    Photo photo = new Photo();
+    photo.setUser(user);
+    photo.setFilename(fileName);
+    photo.setCategory(category);
+    photoRepository.save(photo);
 
     return fileName;
   }

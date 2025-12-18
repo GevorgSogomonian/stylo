@@ -42,7 +42,7 @@ public class SecurityConfig {
         .csrf(csrf -> csrf
             .ignoringRequestMatchers(new AntPathRequestMatcher("/api/**")))
         .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/", "/login", "/error", "/fivicon.ico").permitAll()
+            .requestMatchers("/", "/login", "/error", "/fivicon.ico", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
             .anyRequest().authenticated())
         .oauth2Login(oauth2 -> oauth2
             .loginPage("/login")
