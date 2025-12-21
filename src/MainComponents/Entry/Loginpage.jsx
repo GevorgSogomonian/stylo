@@ -35,7 +35,7 @@ const LoginPage = () => {
                 localStorage.setItem('refreshToken',refreshToken)// Сохраняем токен в localStorage
                 // Handle successful login, e.g., save token, redirect
                 console.log('Login successful', data);
-                redirectTo('/profile'); // Redirect after successful login
+                redirectTo('/stylo'); // Redirect after successful login
             } else {
                 // Handle errors, e.g., wrong credentials
                 setErrorMessage('Invalid username or password');
@@ -58,7 +58,7 @@ const LoginPage = () => {
                         alt="GitHub Logo"
                         className="logo"
                     />
-                    <h1>Вход в чат</h1>
+                    <h1>Stylo</h1>
 
                     <input
                         className="inputLog"

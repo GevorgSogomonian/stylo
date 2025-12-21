@@ -103,6 +103,7 @@ const MainComponent = () => {
         e.preventDefault();
         setIsDragOver(false);
     };
+
     useEffect(() => {
         const handleGlobalDrop = async (e) => {
             e.preventDefault();
@@ -315,7 +316,7 @@ const MainComponent = () => {
                     "image/png": blobPng,
                 }),
             ]);
-            alert("✅ Изображение скопировано в буфер обмена!");
+            alert("Изображение скопировано в буфер обмена!");
         } catch (err) {
             console.error("Ошибка при сохранении:", err);
             // Всегда включаем рамки обратно, даже если произошла ошибка
