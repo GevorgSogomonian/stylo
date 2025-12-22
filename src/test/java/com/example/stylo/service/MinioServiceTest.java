@@ -50,11 +50,19 @@ public class MinioServiceTest {
         String originalFilename = "my_image.jpg";
         String category = "test-category";
 
+        Photo savedPhoto = new Photo();
+        savedPhoto.setId(10L);
+        savedPhoto.setFilename("mocked-filename.png");
+
         when(minioClient.putObject(any(PutObjectArgs.class))).thenReturn(mock(ObjectWriteResponse.class));
+        when(photoRepository.save(any(Photo.class))).thenReturn(savedPhoto);
 
-        String resultFileName = minioService.uploadImage(imageData, originalFilename, testUser, category);
+        Photo resultPhoto = minioService.uploadImage(imageData, originalFilename, testUser, category);
 
-        assertNotNull(resultFileName);
+        assertNotNull(resultPhoto);
+        assertEquals(10L, resultPhoto.getId());
+        assertEquals("mocked-filename.png", resultPhoto.getFilename());
+
         // Verify putObject call
         ArgumentCaptor<PutObjectArgs> putObjectArgsCaptor = ArgumentCaptor.forClass(PutObjectArgs.class);
         verify(minioClient, times(1)).putObject(putObjectArgsCaptor.capture());
@@ -69,7 +77,6 @@ public class MinioServiceTest {
         Photo capturedPhoto = photoCaptor.getValue();
         assertEquals(testUser, capturedPhoto.getUser());
         assertEquals(category, capturedPhoto.getCategory());
-        assertEquals(resultFileName, capturedPhoto.getFilename());
     }
 
     @Test

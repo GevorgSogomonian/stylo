@@ -1,5 +1,6 @@
 package com.example.stylo.controller;
 
+import com.example.stylo.entity.User;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -46,10 +47,16 @@ public class HomeController {
    * @return the name of the home view template
    */
   @GetMapping("/home")
-  public String home(@AuthenticationPrincipal OAuth2User principal, Model model) {
-    model.addAttribute("name", principal.getAttribute("name"));
-    model.addAttribute("email", principal.getAttribute("email"));
-    model.addAttribute("picture", principal.getAttribute("picture"));
+  public String home(@AuthenticationPrincipal Object principal, Model model) {
+    if (principal instanceof OAuth2User oauth2User) {
+        model.addAttribute("name", oauth2User.getAttribute("name"));
+        model.addAttribute("email", oauth2User.getAttribute("email"));
+        model.addAttribute("picture", oauth2User.getAttribute("picture"));
+    } else if (principal instanceof User user) {
+        model.addAttribute("name", user.getName());
+        model.addAttribute("email", user.getEmail());
+        model.addAttribute("picture", user.getPictureUrl());
+    }
     return "home";
   }
 }

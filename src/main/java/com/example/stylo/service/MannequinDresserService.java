@@ -1,74 +1,82 @@
 package com.example.stylo.service;
 
+import com.example.stylo.entity.Photo;
 import com.example.stylo.entity.User;
 import com.google.genai.Client;
-import com.google.genai.types.Content;
-import com.google.genai.types.GenerateContentConfig;
-import com.google.genai.types.GenerateContentResponse;
-import com.google.genai.types.Part;
+import com.google.genai.types.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 @Service
 public class MannequinDresserService {
 
-  private static final String MODEL_NAME = "gemini-3-pro-image-preview";
+  private static final String MODEL_NAME = "gemini-2.5-flash-image";
   private static final String GENERATED_IMAGE_CATEGORY = "generated-vto";
-
 
   private final MinioService imageService;
   private final String apiKey;
+  private final String baseUrl;
 
   public MannequinDresserService(MinioService imageService,
-      @Value("${stylo.ai.google-key}") String apiKey) {
+      @Value("${stylo.ai.google-key}") String apiKey,
+      @Value("${stylo.ai.base-url}") String baseUrl) {
     this.imageService = imageService;
     this.apiKey = apiKey;
+    this.baseUrl = baseUrl;
   }
 
-  public byte[] processVirtualTryOn(String mannequinImageName, List<String> clothingImageNames, User user) {
-    try (Client client = Client.builder().apiKey(apiKey).build()) {
+  public Photo processVirtualTryOn(String mannequinImageName, List<String> clothingImageNames, User user) {
+    HttpOptions httpOptions = HttpOptions.builder()
+        .baseUrl(baseUrl)
+        .build();
+
+    try (Client client = Client.builder()
+        .apiKey(apiKey)
+        .httpOptions(httpOptions)
+        .build()) {
 
       // 1. Конфигурация
       GenerateContentConfig config = GenerateContentConfig.builder()
           .responseModalities("IMAGE") // Только картинка на выходе
           .temperature(0.4f) // Точность важнее креативности
+          .imageConfig(ImageConfig.builder()
+              .aspectRatio("3:4") // Журнальное соотношение сторон
+              .build())
           .build();
 
       // 2. Сборка частей запроса (List<Part>)
       List<Part> requestParts = new ArrayList<>();
 
       // A. Промпт (Инструкция)
-      // Добавляем уточнение про PNG и прозрачность
-      String promptText = "You are a professional digital fashion stylist. " +
-          "Task: Dress the mannequin shown in [MANNEQUIN] with the clothing items provided. " +
-          "Input details: The clothing items have transparent backgrounds (PNG). " +
-          "Requirements: " +
-          "1. Retain the mannequin's exact pose, body shape, and lighting. " +
-          "2. Realistic layering: put items in logical order (e.g. jacket over t-shirt). " +
-          "3. High fidelity: keep the texture and details of the clothing exactly as shown. " +
-          "4. Output: A single high-quality photo of the dressed mannequin.";
+      String promptText = "You are Nano Banana, a visionary digital fashion artist and stylist. " +
+          "Task: Create a professional fashion look by dressing the person/mannequin in [MANNEQUIN] with the provided clothing items. " +
+          "Instructions: " +
+          "1. Dynamic Fitting: Fit the clothing perfectly. You are authorized and encouraged to bend, fold, and drape the clothes as needed to wrap them naturally around the body. " +
+          "2. Mood & Pose: You should adjust or change the mannequin's pose so it matches the aesthetic mood of the outfit (e.g., dynamic for streetwear, elegant for formal). The pose must look natural and professional. " +
+          "3. Studio Background: Use a solid white or very light grey studio background, typical for high-end fashion photoshoots. " +
+          "4. Perfect Integration: Ensure high-quality shadows, realistic layering (e.g., jackets over shirts), and seamless textures. " +
+          "5. High Fidelity: Keep the exact colors and patterns of the clothing provided. " +
+          "6. Output: A single high-resolution, magazine-quality fashion photograph.";
 
       requestParts.add(Part.fromText(promptText));
 
       // B. Манекен
       byte[] mannequinBytes = loadBytesFromService(mannequinImageName);
       requestParts.add(Part.fromText("[MANNEQUIN]:"));
-      requestParts.add(Part.fromBytes(mannequinBytes, "image/png")); // Допустим, манекен тоже PNG
+      requestParts.add(Part.fromBytes(mannequinBytes, "image/png"));
 
       // C. Одежда (Цикл)
       for (int i = 0; i < clothingImageNames.size(); i++) {
         String clothName = clothingImageNames.get(i);
         byte[] clothBytes = loadBytesFromService(clothName);
 
-        // Добавляем текстовую метку и само изображение
         requestParts.add(Part.fromText("[CLOTHING_ITEM_" + (i + 1) + "]:"));
-        requestParts.add(Part.fromBytes(clothBytes, "image/png")); // Ваши файлы с прозрачным фоном
+        requestParts.add(Part.fromBytes(clothBytes, "image/png"));
       }
 
       // 3. Правильное создание Content из List<Part>
@@ -93,23 +101,20 @@ public class MannequinDresserService {
     }
   }
 
-  private byte[] saveResultToMinio(GenerateContentResponse response, User user, String originalFilename) throws Exception {
-    // Проверяем, есть ли части в ответе
+  private Photo saveResultToMinio(GenerateContentResponse response, User user, String originalFilename)
+      throws Exception {
     if (response.parts() == null || response.parts().isEmpty()) {
       System.out.println("Ответ пустой.");
       return null;
     }
 
     for (Part part : response.parts()) {
-      // Проверяем наличие бинарных данных (картинки)
       if (part.inlineData().isPresent()) {
         var blob = part.inlineData().get();
         if (blob.data().isPresent()) {
           byte[] imageBytes = blob.data().get();
           String newFilename = "vto_result_" + originalFilename;
-          imageService.uploadImage(imageBytes, newFilename, user, GENERATED_IMAGE_CATEGORY);
-          System.out.println("Результат сохранен в Minio: " + newFilename);
-          return imageBytes;
+          return imageService.uploadImage(imageBytes, newFilename, user, GENERATED_IMAGE_CATEGORY);
         }
       }
     }
@@ -117,18 +122,13 @@ public class MannequinDresserService {
   }
 
   private byte[] loadBytesFromService(String objectName) throws IOException {
-    // Выносим получение потока из заголовка try-with-resources,
-    // чтобы можно было обернуть именно этот вызов в try-catch
     InputStream is;
     try {
       is = imageService.downloadImage(objectName);
     } catch (Exception e) {
-      // Оборачиваем общее Exception в IOException или RuntimeException,
-      // чтобы сигнатура метода оставалась чистой
       throw new IOException("Failed to download image from service: " + objectName, e);
     }
 
-    // Теперь используем try-with-resources для гарантированного закрытия потока
     try (is) {
       if (is == null) {
         throw new IOException("ImageService returned null for: " + objectName);

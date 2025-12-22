@@ -1,64 +1,76 @@
 package com.example.stylo.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Collections;
-
+import com.example.stylo.entity.User;
+import com.example.stylo.repository.UserRepository;
+import com.example.stylo.service.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.is;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
-
-import com.example.stylo.service.CustomOAuth2UserService;
-
-@WebMvcTest(UserController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private CustomOAuth2UserService customOAuth2UserService;
+    @Autowired
+    private JwtService jwtService;
 
-    private OAuth2User oAuth2User;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private com.example.stylo.repository.SpaceRepository spaceRepository;
+
+    private String token;
+    private User user;
 
     @BeforeEach
     public void setup() {
-        oAuth2User = new DefaultOAuth2User(
-                Collections.emptyList(),
-                Collections.singletonMap("name", "Test User"),
-                "name");
-
-        OAuth2AuthenticationToken authentication = new OAuth2AuthenticationToken(
-                oAuth2User,
-                Collections.emptyList(),
-                "google");
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        spaceRepository.deleteAll();
+        userRepository.deleteAll();
+        user = new User();
+        user.setEmail("test@example.com");
+        user.setName("Test User");
+        user = userRepository.save(user);
+        token = jwtService.generateToken(user);
     }
 
     @Test
+    @DirtiesContext
     public void testGetUser() throws Exception {
-        mockMvc.perform(get("/api/user"))
+        mockMvc.perform(get("/api/users/me")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("Test User")));
     }
 
     @Test
-    public void testProtectedEndpoint() throws Exception {
-        mockMvc.perform(get("/api/protected"))
+    @DirtiesContext
+    public void testGetAuthStatus_authenticated() throws Exception {
+        mockMvc.perform(get("/api/auth/status")
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(content().string("This is a protected endpoint"));
+                .andExpect(jsonPath("$.authenticated", is(true)));
+    }
+
+    @Test
+    public void testGetAuthStatus_unauthenticated() throws Exception {
+        mockMvc.perform(get("/api/auth/status"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.authenticated", is(false)));
     }
 }

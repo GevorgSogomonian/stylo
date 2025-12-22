@@ -1,58 +1,46 @@
 package com.example.stylo.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.stylo.service.CustomOAuth2UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import com.example.stylo.service.CustomOAuth2UserService;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-
-/**
- * Security configuration for the application.
- * - Disables CSRF for API endpoints under /api/**
- * - Configures OAuth2 login with a custom OIDC user service and a custom login
- * page (/login)
- */
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-  @Autowired
-  private CustomOAuth2UserService customOAuth2UserService;
+    private final JwtAuthFilter jwtAuthFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final AuthenticationProvider authenticationProvider;
 
-  /**
-   * Configure HTTP security for the application.
-   *
-   * - Disables CSRF for /api/** to allow API clients to POST without CSRF tokens
-   * (review for security needs).
-   * - Allows unauthenticated access to /, /login and /error.
-   * - Protects all other endpoints and configures OAuth2 login.
-   *
-   * @param http the HttpSecurity builder
-   * @return the built SecurityFilterChain
-   * @throws Exception on configuration errors
-   */
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf(csrf -> csrf
-            .ignoringRequestMatchers(new AntPathRequestMatcher("/api/**")))
-        .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/", "/login", "/error", "/fivicon.ico", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-            .anyRequest().authenticated())
-        .oauth2Login(oauth2 -> oauth2
-            .loginPage("/login")
-            .defaultSuccessUrl("/home", true)
-            .userInfoEndpoint(userInfo -> userInfo
-                .oidcUserService(customOAuth2UserService)))
-        .logout(logout -> logout
-            .logoutSuccessUrl("/")
-            .permitAll());
 
-    return http.build();
-  }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/", "/login", "/error", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/api/auth/status", "/oauth2/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .oidcUserService(customOAuth2UserService))
+                        .successHandler(oAuth2LoginSuccessHandler)
+                );
+
+        return http.build();
+    }
 }

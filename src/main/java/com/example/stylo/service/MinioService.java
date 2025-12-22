@@ -35,11 +35,11 @@ public class MinioService {
    * @param originalFilename original filename used to compose stored name
    * @param user             the user who uploaded the image
    * @param category         the category of the image
-   * @return object name stored in MinIO
+   * @return saved Photo entity
    * @throws Exception on MinIO errors
    */
   @Transactional
-  public String uploadImage(byte[] data, String originalFilename, User user, String category) throws Exception {
+  public Photo uploadImage(byte[] data, String originalFilename, User user, String category) throws Exception {
     // Normalize filename to use .png extension because processed images are PNG
     String baseName = (originalFilename != null) ? originalFilename : "image";
     int idx = baseName.lastIndexOf('.');
@@ -63,9 +63,7 @@ public class MinioService {
     photo.setUser(user);
     photo.setFilename(fileName);
     photo.setCategory(category);
-    photoRepository.save(photo);
-
-    return fileName;
+    return photoRepository.save(photo);
   }
 
   /**

@@ -29,6 +29,11 @@ public class Photo {
     @JsonIgnore
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "space_id")
+    @JsonIgnore
+    private Space space;
+
     @Column(nullable = false)
     private String filename;
 

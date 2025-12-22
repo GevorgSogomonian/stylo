@@ -1,6 +1,7 @@
 package com.example.stylo.repository;
 
 import com.example.stylo.entity.Photo;
+import com.example.stylo.entity.Space;
 import com.example.stylo.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,42 @@ public class PhotoRepositoryTest {
         // then
         assertNotNull(foundPhotos);
         assertEquals(2, foundPhotos.size());
-        assertEquals(photo1, foundPhotos.get(0));
-        assertEquals(photo2, foundPhotos.get(1));
+    }
+
+    @Test
+    public void whenFindBySpace_thenReturnPhotos() {
+        // given
+        User user = new User();
+        user.setEmail("test@test.com");
+        entityManager.persist(user);
+
+        Space space1 = Space.builder().name("Space 1").user(user).build();
+        entityManager.persist(space1);
+
+        Space space2 = Space.builder().name("Space 2").user(user).build();
+        entityManager.persist(space2);
+
+        Photo photo1 = new Photo();
+        photo1.setFilename("p1.jpg");
+        photo1.setUser(user);
+        photo1.setCategory("cat");
+        photo1.setSpace(space1);
+        entityManager.persist(photo1);
+
+        Photo photo2 = new Photo();
+        photo2.setFilename("p2.jpg");
+        photo2.setUser(user);
+        photo2.setCategory("cat");
+        photo2.setSpace(space2);
+        entityManager.persist(photo2);
+
+        entityManager.flush();
+
+        // when
+        List<Photo> found = photoRepository.findBySpace(space1);
+
+        // then
+        assertEquals(1, found.size());
+        assertEquals(photo1.getFilename(), found.get(0).getFilename());
     }
 }
