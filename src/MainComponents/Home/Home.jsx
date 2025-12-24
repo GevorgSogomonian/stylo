@@ -1,39 +1,48 @@
 import './Home.css';
-import {useNavigate} from "react-router-dom";
-import {useEffect} from "react";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Home = () => {
     const navigate = useNavigate();
-  /*  useEffect(() => {
-        if( localStorage.getItem('jwtToken')!==undefined && localStorage.getItem('jwtToken')!==null )
-            navigate("/profile")
-    }, []);*/
 
-    const stairTextContainerStyles = {
-        textAlign: 'left', // Выровнять текст по правому краю
-        lineHeight: 1.5,
-        marginRight: '20px',  // Отступ от правого края
+    useEffect(() => {
+        const token = localStorage.getItem('jwtToken');
+        if (token) {
+            navigate("/spaces");
+        }
+    }, [navigate]);
+
+    const handleStart = () => {
+        const token = localStorage.getItem('jwtToken');
+        if (token) {
+            navigate('/spaces');
+        } else {
+            navigate('/login');
+        }
     };
 
-    const musicTextStyles = {
-        fontSize: '48px',
-        fontWeight: 'bold',
-        textShadow: '0 0 5px rgba(0, 255, 0, 0.4), 0 0 10px rgba(0, 255, 0, 0.4)',
-        background: 'linear-gradient(90deg, #00aa00, #002200, #00aa00)', // Тусклый зелено-черный градиент
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-    };
-    const redirectTo = (url) => {
-        navigate(url);
-    };
     return (
-        <div>
-            <img className="imgBack" src="" alt="background"/>
-            <div className="text-wrapper" style={stairTextContainerStyles}>
+        <div className="home-container">
+            <header className="home-header">
+                <div className="home-logo">Stylo</div>
+                <button className="home-login-btn" onClick={() => navigate('/login')}>Login</button>
+            </header>
+            
+            <main className="home-hero">
+                <div className="hero-content">
+                    <h1 className="hero-title">Your Personal <span className="highlight">AI Fashion</span> Assistant</h1>
+                    <p className="hero-subtitle">
+                        Create professional outfits, try on clothes virtually, and organize your digital wardrobe with the power of AI.
+                    </p>
+                    <button className="hero-cta" onClick={handleStart}>
+                        Get Started
+                    </button>
+                </div>
+            </main>
 
-
-            </div>
-            <button className="submit-button__button submit" onClick={() => redirectTo('/stylo')}>Войти или зарегистрироваться</button>
+            <footer className="home-footer">
+                <p>&copy; 2025 Stylo AI. All rights reserved.</p>
+            </footer>
         </div>
     );
 };

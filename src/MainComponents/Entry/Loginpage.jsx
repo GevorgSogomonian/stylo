@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Loginpage.css';
-import { FaGithub } from 'react-icons/fa';
+import '../../../../../Downloads/stylo-front/src/MainComponents/Entry/Loginpage.css';
+import { FaGoogle } from 'react-icons/fa';
 
 const LoginPage = () => {
     const navigate = useNavigate();
-    const backendUrl = process.env.REACT_APP_BACKEND_URL;
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8080';
     const loginUrl = `${backendUrl}/login`;
 
     const [name, setName] = useState('');
@@ -30,14 +30,10 @@ const LoginPage = () => {
             if (response.ok) {
                 const data = await response.json();
                 const token = data.token;
-                const refreshToken = data.refreshToken// Предположим, что сервер возвращает объект с полем token
                 localStorage.setItem('jwtToken', token);
-                localStorage.setItem('refreshToken',refreshToken)// Сохраняем токен в localStorage
-                // Handle successful login, e.g., save token, redirect
                 console.log('Login successful', data);
-                redirectTo('/stylo'); // Redirect after successful login
+                redirectTo('/stylo'); 
             } else {
-                // Handle errors, e.g., wrong credentials
                 setErrorMessage('Invalid username or password');
             }
         } catch (error) {
@@ -45,64 +41,38 @@ const LoginPage = () => {
         }
     };
 
+    const handleGoogleLogin = () => {
+        const targetUrl = `${backendUrl}/oauth2/authorization/google`;
+        console.log('Redirecting to Google via:', targetUrl);
+        window.location.assign(targetUrl);
+    };
+
     return (
         <div className="container">
-            <button className="top-left-button" onClick={() => redirectTo('/')}>
-                Назад
+            <button className="top-left-button" onClick={() => redirectTo('/')} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '18px' }}>←</span> Back
             </button>
 
-            <form onSubmit={handleSubmit}>
-                <div className="naming">
-                    <img
-                        src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-                        alt="GitHub Logo"
-                        className="logo"
-                    />
-                    <h1>Stylo</h1>
+            <div className="naming">
+                <div className="logo" style={{ color: '#1a73e8', fontSize: '32px', fontWeight: '500', marginBottom: '8px', textAlign: 'center' }}>Stylo</div>
+                <h1>Sign in</h1>
+                <p style={{ color: '#5f6368', marginBottom: '32px', textAlign: 'center' }}>
+                    Use your Google Account to sign in or create a new Stylo account
+                </p>
 
-                    <input
-                        className="inputLog"
-                        type="text"
-                        id="name"
-                        name="name"
-                        placeholder="Введите имя"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                    />
+                <button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    className="google-login-link"
+                >
+                    <FaGoogle style={{ color: '#4285F4', display: 'block' }} /> 
+                    <span className="google-text" style={{ lineHeight: '1' }}>Continue with Google</span>
+                </button>
 
-                    <input
-                        className="inputLog"
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Введите пароль"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-
-                    <div className="imgEntry">
-                        <a
-                            href="https://localhost:8080/oauth2/authorization/github"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Продолжить с  <FaGithub />
-                        </a>
-                    </div>
-
-                    {errorMessage && <p className="error-message">{errorMessage}</p>}
-
-                    <button className="button" type="submit">
-                       Войти
-                    </button>
-                </div>
-            </form>
-
-            <a className="reg_ref" onClick={() => redirectTo('/reg')}>
-               У меня нет аккаунта
-            </a>
+                <p style={{ marginTop: '32px', fontSize: '12px', color: '#70757a', textAlign: 'center', lineHeight: '1.5' }}>
+                    By continuing, Google will share your name, email address, language preference, and profile picture with Stylo.
+                </p>
+            </div>
         </div>
     );
 };

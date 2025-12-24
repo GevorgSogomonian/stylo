@@ -6,82 +6,47 @@
 }
 
 .avatar_but {
-    width: 42px;
-    height: 42px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     cursor: pointer;
-    border: 2px solid transparent;
-    transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.avatar_but:hover {
-    border-color: #dd8717;
-    transform: scale(1.05);
+    border: 1px solid #dadce0;
+    background-color: #f1f3f4;
 }
 
 .avatar_menu {
     position: absolute;
-    top: 50px;
+    top: 38px; /* Еще ближе к аватарке */
     right: 0;
-    width: 200px;
-    height:400px;
-    background-color: #fff;
-    border: 1px solid #dd8717;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    padding: 8px 0; /* ВЕРНУЛИ padding сверху и снизу */
+    width: 150px;
+    background-color: #ffffff !important;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+    border: 1px solid #dadce0 !important;
+    z-index: 1000000;
+    padding: 2px 0; /* Минимальные отступы сверху/снизу */
+    display: block;
 }
 
-/* Стрелочка */
-.avatar_menu::before {
-    content: "";
-    position: absolute;
-    top: -8px;
-    right: 12px;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid #dd8717;
-}
-
-.avatar_menu::after {
-    content: "";
-    position: absolute;
-    top: -6px;
-    right: 12px;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid #fff;
-}
 .avatar_list {
     margin: 0;
     padding: 0;
     list-style: none;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
 }
 
-
 .avatar_list_item {
-    padding: 10px 16px;
-    font-size: 14px;
-    color: #333;
+    padding: 6px 16px; /* Уменьшил высоту пунктов */
+    font-size: 13px;
+    color: #3c4043;
     cursor: pointer;
-    transition: background-color 0.2s;
-    border: none;
-    background: none;
-    width: 100%;
+    background-color: #ffffff;
     text-align: left;
+    transition: background-color 0.2s;
+    display: block;
+    width: 100%;
     box-sizing: border-box;
-    display: block; /* Добавили display: block */
 }
 
 .avatar_list_item:hover {
-    background-color: #fff7eb;
-    color: #dd8717;
+    background-color: #f1f3f4;
 }

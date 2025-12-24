@@ -1,67 +1,152 @@
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #000000; /* Черный фон для body */
-    width: 100vw;
-    height: 100vh;
-}
-
-
-.imgBack {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 50vw; /* Фоновое изображение на левой половине */
-    height: 100vh;
-    object-fit: cover;
-    z-index: 2; /* Задний план */
-}
-
-.text-wrapper {
-    width: 50vw; /* Текст на правой половине экрана */
+.home-container {
+    min-height: 100vh;
     display: flex;
-    left:50%;
     flex-direction: column;
-    justify-content: center; /* Центрируем текст вертикально */
-    align-items: flex-end; /* Выравнивание текста по правому краю */
-    z-index: 3; /* Текст поверх изображения */
+    background-color: #ffffff;
+    color: #202124;
+    font-family: 'Roboto', sans-serif;
 }
 
-.music-text {
-    font-size: 48px;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(0, 255, 0, 0.4), 0 0 10px rgba(0, 255, 0, 0.4);
-    background: linear-gradient(90deg, #00aa00, #002200, #00aa00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 80px;
+    background: #ffffff;
 }
 
-@keyframes glow {
-    0% {
-        text-shadow: 0 0 10px rgba(0, 255, 0, 0.8), 0 0 20px rgba(0, 255, 0, 0.8);
-    }
-    50% {
-        text-shadow: 0 0 20px rgba(0, 255, 0, 1), 0 0 40px rgba(0, 255, 0, 1);
-    }
-    100% {
-        text-shadow: 0 0 10px rgba(0, 255, 0, 0.8), 0 0 20px rgba(0, 255, 0, 0.8);
-    }
-
+.home-logo {
+    font-size: 28px;
+    font-weight: 500;
+    color: #1a73e8;
 }
-.submit-button__button {
-    font-size: 24px;
-    position: absolute;
-    font-weight: 400;
-    right: 10%;
-    top:70%;
-    width: 30%;
-    height: 68px;
-    border-radius: 10px;
-    background: linear-gradient(90deg, #ff5c4d, #eb469f 30%, #8341ef 75%, #3f68f9);
-    border: none;
+
+.home-login-btn {
+    padding: 10px 24px;
+    border-radius: 20px;
+    border: 1px solid #dadce0;
+    background: #ffffff;
+    color: #1a73e8;
+    font-weight: 500;
     cursor: pointer;
-    color: #fff;
-    margin-bottom: 16px;
-    z-index: 4;
+    transition: background-color 0.2s;
+}
+
+.home-login-btn:hover {
+    background-color: #f8f9fa;
+}
+
+.home-hero {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 80px;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.hero-content {
+    max-width: 600px;
+}
+
+.hero-title {
+    font-size: 64px;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    font-weight: 500;
+    color: #202124;
+}
+
+.hero-title .highlight {
+    color: #1a73e8;
+}
+
+.hero-subtitle {
+    font-size: 20px;
+    color: #5f6368;
+    margin-bottom: 40px;
+    line-height: 1.5;
+}
+
+.hero-cta {
+    padding: 16px 40px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #ffffff;
+    background-color: #1a73e8;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.hero-cta:hover {
+    background-color: #1557b0;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.hero-visual {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.visual-circle {
+    width: 400px;
+    height: 400px;
+    background: linear-gradient(135deg, #e8f0fe 0%, #d2e3fc 100%);
+    border-radius: 50%;
+    position: absolute;
+}
+
+.visual-rect {
+    width: 300px;
+    height: 400px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    z-index: 1;
+    border: 1px solid #e8eaed;
+}
+
+.home-footer {
+    padding: 40px 80px;
+    border-top: 1px solid #f1f3f4;
+    color: #70757a;
+    font-size: 14px;
+    text-align: center;
+}
+
+@media (max-width: 1024px) {
+    .home-hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 60px 24px;
+    }
+    .home-header {
+        padding: 20px 24px;
+    }
+    .hero-title {
+        font-size: 48px;
+    }
+    .hero-visual {
+        margin-top: 60px;
+        width: 100%;
+        height: 300px;
+    }
+    .visual-circle {
+        width: 250px;
+        height: 250px;
+    }
+    .visual-rect {
+        width: 200px;
+        height: 250px;
+    }
 }

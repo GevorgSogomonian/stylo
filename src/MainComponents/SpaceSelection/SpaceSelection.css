@@ -1,0 +1,112 @@
+.space-selection-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+}
+
+.space-content {
+    max-width: 900px;
+    margin: 40px auto;
+    width: 100%;
+    padding: 0 24px;
+}
+
+.space-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.space-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.space-card {
+    background: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 72px;
+    box-sizing: border-box;
+}
+
+.space-card:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+}
+
+.space-card-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.space-icon {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.space-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #3c4043;
+    display: flex;
+    align-items: center;
+}
+
+.space-card-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px;
+    margin: 0;
+}
+
+.nav-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #dadce0;
+    background: #ffffff;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #5f6368;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    line-height: 0 !important;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.nav-btn:hover {
+    background-color: #f1f3f4;
+}
+
+.google-input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+    margin-bottom: 24px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.google-input:focus {
+    border-color: #1a73e8;
+    border-width: 2px;
+}

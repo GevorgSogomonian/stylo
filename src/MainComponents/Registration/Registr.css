@@ -1,113 +1,149 @@
-.imgVisible{
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    top:54%;
-    left:70%
-
-}
-
-.form-container {
+.registration-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    min-height: 100vh;
+    width: 100vw;
+    background-color: #ffffff;
+    font-family: 'Roboto', sans-serif;
 }
-button {
-    padding: 10px;
-    font-size: 16px;
-    background-color: #000;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-    margin-top: 10px;
-}
-button:hover {
-    background-color: #fff;
-    color: #000;
-    border: 2px solid #000;
-}
-input {
-    padding: 10px;
-    font-size: 16px;
-    width: 100%;
+
+.registration-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+    padding: 40px;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
     box-sizing: border-box;
-    margin-bottom: 10px;
-}
-.file-input-container {
-    position: relative;
-    width: 100%;
-    margin-bottom: 10px;
-}
-.file-input-container input[type="file"] {
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    cursor: pointer;
-}
-.input-valid {
-    color:  red;
 }
 
-.input-invalid {
-    /* стили для невалидного ввода */
-    color: green;
+.logo {
+    color: #1a73e8;
+    font-size: 32px;
+    font-weight: 500;
+    margin-bottom: 8px;
 }
-.Valid{
-    visibility: hidden;
-}
-.Nevalid{
-    visibility: visible;
-    color: #FF0000;
-    margin-bottom: 20px;
 
+h1 {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    color: #202124;
 }
-.file-input-label {
+
+.subtitle {
+    color: #5f6368;
+    margin-bottom: 24px;
+    font-size: 16px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 13px 15px;
+    margin: 8px 0;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+    color: #202124;
+}
+
+.input-field:focus {
+    outline: none;
+    border: 2px solid #1a73e8;
+    padding: 12px 14px;
+}
+
+.input-error {
+    border: 1px solid #d93025;
+}
+
+.error-text {
+    color: #d93025;
+    font-size: 12px;
+    align-self: flex-start;
+    margin-bottom: 8px;
+}
+
+.file-input-wrapper {
+    width: 100%;
+    margin: 16px 0;
+}
+
+.file-label {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
-    font-size: 16px;
-    background-color: #000;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
     width: 100%;
+    padding: 10px;
+    background-color: #ffffff;
+    color: #1a73e8;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
     box-sizing: border-box;
-    background-image: url("https://avatars.mds.yandex.net/i?id=0c7320412c2135c756817b46512e95dba66c3ce4-13605392-images-thumbs&n=13");
+    transition: background-color 0.2s;
 }
-.file-input-label:hover {
-    background-color: #fff;
-    color: white;
-    border: 2px solid #000;
 
+.file-label:hover {
+    background-color: #f8f9fe;
+    border-color: #1a73e8;
 }
-.Back {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background-color: #000;
-    color: #fff;
-    padding: 10px 20px;
+
+.submit-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 24px;
+    background-color: #1a73e8;
+    color: #ffffff;
     border: none;
     border-radius: 4px;
+    font-weight: 500;
+    font-size: 14px;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.2s;
 }
-.unsent{
-    visibility: visible;
+
+.submit-btn:hover {
+    background-color: #1557b0;
 }
-.send{
-   visibility: hidden;
+
+.submit-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
-.input_password{
-    color:white;
+
+.back-btn {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    background: none;
+    color: #5f6368;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.back-btn:hover {
+    background-color: #f1f3f4;
+    color: #202124;
+}
+
+.login-link {
+    margin-top: 24px;
+    color: #1a73e8;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.login-link:hover {
+    text-decoration: underline;
 }
