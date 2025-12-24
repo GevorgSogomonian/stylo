@@ -21,13 +21,16 @@ public class MannequinDresserService {
   private final MinioService imageService;
   private final String apiKey;
   private final String baseUrl;
+  private final String promptText;
 
   public MannequinDresserService(MinioService imageService,
-      @Value("${stylo.ai.google-key}") String apiKey,
-      @Value("${stylo.ai.base-url}") String baseUrl) {
+                                 @Value("${stylo.ai.google-key}") String apiKey,
+                                 @Value("${stylo.ai.base-url}") String baseUrl,
+                                 @Value("${stylo.ai.prompt}") String promptText) {
     this.imageService = imageService;
     this.apiKey = apiKey;
     this.baseUrl = baseUrl;
+    this.promptText = promptText;
   }
 
   public Photo processVirtualTryOn(String mannequinImageName, List<String> clothingImageNames, User user) {
@@ -53,16 +56,6 @@ public class MannequinDresserService {
       List<Part> requestParts = new ArrayList<>();
 
       // A. Промпт (Инструкция)
-      String promptText = "You are Nano Banana, a visionary digital fashion artist and stylist. " +
-          "Task: Create a professional fashion look by dressing the person/mannequin in [MANNEQUIN] with the provided clothing items. " +
-          "Instructions: " +
-          "1. Dynamic Fitting: Fit the clothing perfectly. You are authorized and encouraged to bend, fold, and drape the clothes as needed to wrap them naturally around the body. " +
-          "2. Mood & Pose: You should adjust or change the mannequin's pose so it matches the aesthetic mood of the outfit (e.g., dynamic for streetwear, elegant for formal). The pose must look natural and professional. " +
-          "3. Studio Background: Use a solid white or very light grey studio background, typical for high-end fashion photoshoots. " +
-          "4. Perfect Integration: Ensure high-quality shadows, realistic layering (e.g., jackets over shirts), and seamless textures. " +
-          "5. High Fidelity: Keep the exact colors and patterns of the clothing provided. " +
-          "6. Output: A single high-resolution, magazine-quality fashion photograph.";
-
       requestParts.add(Part.fromText(promptText));
 
       // B. Манекен
