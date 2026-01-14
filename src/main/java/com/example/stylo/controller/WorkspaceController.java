@@ -30,13 +30,13 @@ public class WorkspaceController {
             @RequestHeader(value = "X-Space-Id", required = false) Long spaceId) {
         User user = getUserFromPrincipal(principal);
         com.example.stylo.entity.Space space = getSpace(user, spaceId);
-        
+
         List<WorkspaceItem> items = workspaceItemRepository.findBySpace(space);
-        
+
         Map<String, Object> response = new java.util.HashMap<>();
         response.put("items", items);
         response.put("selectedMannequin", space.getSelectedMannequin());
-        
+
         return ResponseEntity.ok(response);
     }
 
@@ -46,10 +46,10 @@ public class WorkspaceController {
             @AuthenticationPrincipal Object principal,
             @RequestHeader(value = "X-Space-Id", required = false) Long spaceId,
             @RequestBody Map<String, Object> payload) {
-        
+
         User user = getUserFromPrincipal(principal);
         com.example.stylo.entity.Space space = getSpace(user, spaceId);
-        
+
         // Сохраняем манекен если он пришел
         if (payload.containsKey("mannequinId")) {
             Object mIdObj = payload.get("mannequinId");
@@ -65,22 +65,25 @@ public class WorkspaceController {
         }
 
         List<Map<String, Object>> items = (List<Map<String, Object>>) payload.get("items");
-        
+
         // Очищаем старое состояние холста
         workspaceItemRepository.deleteBySpace(space);
-        
-        if (items == null) return ResponseEntity.ok(List.of());
+
+        if (items == null)
+            return ResponseEntity.ok(List.of());
 
         // Сохраняем новое
         List<WorkspaceItem> newItems = items.stream().map(data -> {
             Long photoId = Long.valueOf(data.get("serverPhotoId").toString());
             Photo photo = photoRepository.findById(photoId)
-                    .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Photo not found"));
-            
+                    .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                            org.springframework.http.HttpStatus.NOT_FOUND, "Photo not found"));
+
             if (!photo.getUser().getId().equals(user.getId())) {
-                throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Access denied to photo: " + photoId);
+                throw new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.FORBIDDEN, "Access denied to photo: " + photoId);
             }
-            
+
             return WorkspaceItem.builder()
                     .user(user)
                     .space(space)
@@ -89,10 +92,11 @@ public class WorkspaceController {
                     .y(Double.valueOf(data.get("y").toString()).intValue())
                     .width(Double.valueOf(data.get("width").toString()).intValue())
                     .height(Double.valueOf(data.get("height").toString()).intValue())
-                    .rotation(data.get("rotation") != null ? Double.valueOf(data.get("rotation").toString()).intValue() : 0)
+                    .rotation(data.get("rotation") != null ? Double.valueOf(data.get("rotation").toString()).intValue()
+                            : 0)
                     .build();
         }).toList();
-        
+
         return ResponseEntity.ok(workspaceItemRepository.saveAll(newItems));
     }
 
@@ -107,12 +111,15 @@ public class WorkspaceController {
 
     private com.example.stylo.entity.Space getSpace(User user, Long spaceId) {
         if (spaceId == null) {
-            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "X-Space-Id header is missing");
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "X-Space-Id header is missing");
         }
         com.example.stylo.entity.Space space = spaceRepository.findById(spaceId)
-                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Space not found"));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Space not found"));
         if (!space.getUser().getId().equals(user.getId())) {
-            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN);
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.FORBIDDEN);
         }
         return space;
     }
